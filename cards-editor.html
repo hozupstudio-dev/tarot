@@ -6,7 +6,6 @@
 <title>타로 카드 해석 에디터</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
   --bg: #F8F5FF;
   --surface: #FFFFFF;
@@ -18,539 +17,274 @@
   --text-mid: #5E5472;
   --text-soft: #9188A0;
   --border: #E0D8F0;
-  --sidebar-w: 280px;
+  --sidebar-w: 260px;
 }
+body { font-family: 'Apple SD Gothic Neo','Noto Sans KR','Segoe UI',sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-body {
-  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ── TOP BAR ─────────────────────────────── */
 .topbar {
-  background: var(--purple-dark);
-  color: #fff;
-  padding: 14px 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  background: var(--purple-dark); color: #fff; padding: 12px 20px;
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+  position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.15);
 }
-.topbar h1 { font-size: 18px; font-weight: 700; flex: 1; }
-.topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-.btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
+.topbar h1 { font-size: 16px; font-weight: 700; flex: 1; }
+.topbar-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn { padding: 7px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
 .btn:active { transform: scale(0.96); }
-.btn-outline {
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.35);
-}
+.btn-outline { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.35); }
 .btn-outline:hover { background: rgba(255,255,255,0.25); }
-.btn-gold {
-  background: var(--gold);
-  color: #fff;
-}
-.btn-gold:hover { background: #B8983D; }
-.btn-save {
-  background: #5CAD6C;
-  color: #fff;
-}
-.btn-save:hover { background: #4A9C5A; }
+.btn-gold { background: var(--gold); color: #fff; }
+.btn-save { background: #5CAD6C; color: #fff; }
 
-/* ── LAYOUT ──────────────────────────────── */
-.app-layout {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-  height: calc(100vh - 52px);
-}
+.app-layout { display: flex; flex: 1; overflow: hidden; }
 
-/* ── SIDEBAR ─────────────────────────────── */
-.sidebar {
-  width: var(--sidebar-w);
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.sidebar-search {
-  padding: 12px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.sidebar-search input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
-  color: var(--text);
-  background: var(--bg);
-  outline: none;
-}
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+.sidebar-search { padding: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.sidebar-search input { width: 100%; padding: 7px 11px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; color: var(--text); background: var(--bg); outline: none; }
 .sidebar-search input:focus { border-color: var(--purple); }
-
-.filter-row {
-  padding: 8px 12px;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-.filter-btn {
-  padding: 4px 10px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--text-mid);
-  transition: all 0.15s;
-}
-.filter-btn.active {
-  background: var(--purple);
-  color: #fff;
-  border-color: var(--purple);
-}
-
-.card-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px 0;
-}
-
-.list-section-header {
-  padding: 10px 14px 4px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text-soft);
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-}
-
-.list-item {
-  padding: 9px 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: background 0.1s;
-  border-left: 3px solid transparent;
-}
+.filter-row { padding: 8px 10px; display: flex; gap: 5px; flex-wrap: wrap; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.filter-btn { padding: 4px 9px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); font-size: 11px; font-weight: 600; cursor: pointer; color: var(--text-mid); transition: all 0.15s; }
+.filter-btn.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+.card-list { flex: 1; overflow-y: auto; padding: 6px 0; }
+.list-section-header { padding: 8px 12px 3px; font-size: 10px; font-weight: 700; color: var(--text-soft); letter-spacing: 0.8px; text-transform: uppercase; }
+.list-item { padding: 8px 12px; cursor: pointer; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; transition: background 0.1s; }
 .list-item:hover { background: var(--bg); }
-.list-item.active {
-  background: #EDE8FF;
-  border-left-color: var(--purple);
-}
+.list-item.active { background: #EDE8FF; border-left-color: var(--purple); }
+.item-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
 .list-item.has-data .item-dot { background: #5CAD6C; }
 .list-item.partial-data .item-dot { background: var(--gold); }
-
-.item-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--border);
-  flex-shrink: 0;
-}
 .item-name { font-size: 13px; color: var(--text); font-weight: 500; }
-.item-en   { font-size: 11px; color: var(--text-soft); margin-top: 1px; }
+.item-en { font-size: 10px; color: var(--text-soft); }
 
-/* ── MAIN EDITOR ─────────────────────────── */
-.editor-main {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-}
+/* EDITOR */
+.editor-main { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.editor-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-soft); gap: 10px; }
+.editor-empty .icon { font-size: 40px; }
 
-.editor-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--text-soft);
-  gap: 12px;
-}
-.editor-empty .icon { font-size: 48px; }
-.editor-empty p { font-size: 14px; }
-
-.editor-card-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.card-art-preview {
-  width: 64px; height: 100px;
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
-  color: rgba(255,255,255,0.6);
-  flex-shrink: 0;
-  border: 2px solid rgba(255,255,255,0.3);
-  position: relative;
-  overflow: hidden;
-}
-.card-art-preview::before {
-  content: '';
-  position: absolute;
-  inset: 4px;
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 4px;
-}
-
-.card-header-info h2 {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 4px;
-}
-.card-header-info .en-name {
-  font-size: 14px;
-  color: var(--text-soft);
-  margin-bottom: 8px;
-}
-.arcana-badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 700;
-}
+.editor-card-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+.card-art-preview { width: 56px; height: 88px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: rgba(255,255,255,0.6); flex-shrink: 0; border: 2px solid rgba(255,255,255,0.3); }
+.card-header-info h2 { font-size: 20px; font-weight: 700; color: var(--text); }
+.card-header-info .en-name { font-size: 13px; color: var(--text-soft); margin: 3px 0 6px; }
+.arcana-badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
 .arcana-major { background: #EDE8FF; color: var(--purple-dark); }
 .arcana-minor-wands { background: #FFF0E0; color: #A05820; }
 .arcana-minor-cups { background: #E0EEFF; color: #285898; }
 .arcana-minor-swords { background: #E8EEF5; color: #486888; }
 .arcana-minor-pentacles { background: #E8F5E0; color: #387828; }
 
-.progress-indicator {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
-.prog-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-soft);
-}
-.prog-dot {
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: var(--border);
-}
-.prog-dot.filled { background: #5CAD6C; }
-.prog-dot.half   { background: var(--gold); }
+/* completion bar */
+.completion-bar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.comp-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-soft); }
+.comp-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--border); }
+.comp-dot.full { background: #5CAD6C; }
+.comp-dot.partial { background: var(--gold); }
 
-/* Fortune type tabs */
-.fortune-tabs {
-  display: flex;
-  gap: 0;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1.5px solid var(--border);
-}
-.fortune-tab {
-  flex: 1;
-  padding: 10px;
-  background: var(--surface);
-  border: none;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-soft);
-  cursor: pointer;
-  transition: all 0.15s;
-  border-right: 1px solid var(--border);
-}
+/* Fortune tabs */
+.fortune-tabs { display: flex; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--border); margin-bottom: 14px; }
+.fortune-tab { flex: 1; padding: 9px 6px; background: var(--surface); border: none; font-size: 12px; font-weight: 600; color: var(--text-soft); cursor: pointer; transition: all 0.15s; border-right: 1px solid var(--border); }
 .fortune-tab:last-child { border-right: none; }
-.fortune-tab.active {
-  background: var(--purple);
-  color: #fff;
-}
+.fortune-tab.active { background: var(--purple); color: #fff; }
 
-/* Interpretation fields */
-.interp-section {
-  background: var(--surface);
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  overflow: hidden;
-  margin-bottom: 16px;
-}
+/* Position tabs */
+.position-tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.pos-tab { padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border); background: var(--bg); font-size: 12px; font-weight: 600; color: var(--text-soft); cursor: pointer; transition: all 0.15s; }
+.pos-tab.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+.pos-tab.filled { border-color: #5CAD6C; color: #5CAD6C; }
+.pos-tab.filled.active { background: #5CAD6C; color: #fff; border-color: #5CAD6C; }
 
-.interp-section-header {
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #F5F0FF, #FFF5F5);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.interp-section-header h3 {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-}
+/* Field sections */
+.field-section { background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 12px; }
+.field-header { padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.field-header.upright { background: linear-gradient(135deg, #F5F0FF, #FFF5F8); }
+.field-header.reversed { background: linear-gradient(135deg, #FFF8E8, #FFF0E8); }
+.field-header h4 { font-size: 13px; font-weight: 700; color: var(--text); }
 .char-count { font-size: 11px; color: var(--text-soft); }
+.field-section textarea { width: 100%; padding: 12px 14px; border: none; font-size: 13px; line-height: 1.75; color: var(--text); background: var(--surface); resize: vertical; min-height: 90px; font-family: inherit; outline: none; }
+.field-section textarea:focus { background: #FDFCFF; }
+.field-section textarea::placeholder { color: #C4BCD0; }
 
-.interp-section textarea {
-  width: 100%;
-  padding: 14px 16px;
-  border: none;
-  font-size: 14px;
-  line-height: 1.75;
-  color: var(--text);
-  background: var(--surface);
-  resize: vertical;
-  min-height: 100px;
-  font-family: inherit;
-  outline: none;
-}
-.interp-section textarea::placeholder { color: #C0B8CC; }
-.interp-section textarea:focus {
-  background: #FDFCFF;
-}
+.action-row { display: flex; gap: 8px; margin-top: 4px; }
+.btn-save-card { flex: 1; padding: 12px; background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-next { padding: 12px 18px; background: var(--bg); color: var(--text-mid); border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
-.divider-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 16px;
-  background: #FFF8E8;
-  border-top: 1px solid var(--border);
-  font-size: 12px;
-  color: #8A7040;
-  font-weight: 600;
-}
-.divider-label::before { content: '↕ 역방향 해석'; }
+.save-toast { position: fixed; bottom: 20px; right: 20px; background: #2E2640; color: #fff; padding: 10px 18px; border-radius: 10px; font-size: 13px; font-weight: 600; opacity: 0; transform: translateY(8px); transition: all 0.3s; pointer-events: none; z-index: 999; }
+.save-toast.show { opacity: 1; transform: translateY(0); }
 
-.interp-section .reversed-area {
-  border-top: 1px dashed var(--border);
-}
-
-.field-label {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-soft);
-  padding: 8px 16px 0;
-  letter-spacing: 0.3px;
-}
-
-/* Save indicator */
-.save-toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: #2E2640;
-  color: #fff;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: all 0.3s;
-  pointer-events: none;
-  z-index: 999;
-}
-.save-toast.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Responsive */
-@media (max-width: 600px) {
-  .sidebar { width: 220px; }
-  .editor-main { padding: 16px; }
-}
+.pos-name-label { font-size: 11px; color: var(--purple); font-weight: 600; margin-bottom: 8px; padding: 4px 10px; background: #EDE8FF; border-radius: 6px; display: inline-block; }
 </style>
 </head>
 <body>
-
 <div class="topbar">
-  <h1>🔮 타로 카드 해석 에디터</h1>
+  <h1>🔮 카드 해석 에디터</h1>
   <div class="topbar-actions">
-    <button class="btn btn-outline" onclick="exportData()">내보내기 (JSON)</button>
-    <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">가져오기</button>
-    <button class="btn btn-save" onclick="saveAll()">💾 저장</button>
-    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
-    <a href="index.html" class="btn btn-gold" style="text-decoration:none;">← 사이트 보기</a>
+    <button class="btn btn-outline" onclick="exportData()">내보내기</button>
+    <button class="btn btn-outline" onclick="document.getElementById('imp').click()">가져오기</button>
+    <button class="btn btn-save" onclick="saveAll()">💾 전체 저장</button>
+    <input type="file" id="imp" accept=".json" style="display:none" onchange="importData(event)">
+    <a href="images-editor.html" class="btn btn-outline" style="text-decoration:none;">🖼 이미지</a>
+    <a href="index.html" class="btn btn-gold" style="text-decoration:none;">← 사이트</a>
   </div>
 </div>
 
 <div class="app-layout">
-  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-search">
-      <input type="text" id="search-input" placeholder="카드 이름 검색..." oninput="filterCards()">
+      <input type="text" id="search-input" placeholder="카드 이름 검색..." oninput="renderList()">
     </div>
     <div class="filter-row">
-      <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">전체</button>
-      <button class="filter-btn" data-filter="major" onclick="setFilter('major', this)">메이저</button>
-      <button class="filter-btn" data-filter="wands" onclick="setFilter('wands', this)">완드</button>
-      <button class="filter-btn" data-filter="cups" onclick="setFilter('cups', this)">컵</button>
-      <button class="filter-btn" data-filter="swords" onclick="setFilter('swords', this)">소드</button>
-      <button class="filter-btn" data-filter="pentacles" onclick="setFilter('pentacles', this)">펜타클</button>
+      <button class="filter-btn active" onclick="setFilter('all',this)">전체</button>
+      <button class="filter-btn" onclick="setFilter('major',this)">메이저</button>
+      <button class="filter-btn" onclick="setFilter('wands',this)">완드</button>
+      <button class="filter-btn" onclick="setFilter('cups',this)">컵</button>
+      <button class="filter-btn" onclick="setFilter('swords',this)">소드</button>
+      <button class="filter-btn" onclick="setFilter('pentacles',this)">펜타클</button>
     </div>
     <div class="card-list" id="card-list"></div>
   </div>
-
-  <!-- MAIN EDITOR -->
   <div class="editor-main" id="editor-main">
     <div class="editor-empty">
       <div class="icon">✨</div>
       <p>왼쪽에서 카드를 선택하세요</p>
-      <p style="font-size:12px;margin-top:-4px;">총 78장의 카드 해석을 작성할 수 있습니다</p>
+      <p style="font-size:12px;color:var(--text-soft)">78장 × 운세별 × 자리별로 해석을 작성합니다</p>
     </div>
   </div>
 </div>
-
-<div class="save-toast" id="save-toast">저장되었습니다</div>
+<div class="save-toast" id="save-toast"></div>
 
 <script>
 const CARDS = [
-  { id:0,  name:'바보',            nameEn:'The Fool',             arcana:'major', suit:null },
-  { id:1,  name:'마법사',          nameEn:'The Magician',         arcana:'major', suit:null },
-  { id:2,  name:'여사제',          nameEn:'The High Priestess',   arcana:'major', suit:null },
-  { id:3,  name:'여황제',          nameEn:'The Empress',          arcana:'major', suit:null },
-  { id:4,  name:'황제',            nameEn:'The Emperor',          arcana:'major', suit:null },
-  { id:5,  name:'교황',            nameEn:'The Hierophant',       arcana:'major', suit:null },
-  { id:6,  name:'연인',            nameEn:'The Lovers',           arcana:'major', suit:null },
-  { id:7,  name:'전차',            nameEn:'The Chariot',          arcana:'major', suit:null },
-  { id:8,  name:'힘',              nameEn:'Strength',             arcana:'major', suit:null },
-  { id:9,  name:'은둔자',          nameEn:'The Hermit',           arcana:'major', suit:null },
-  { id:10, name:'운명의 수레바퀴', nameEn:'Wheel of Fortune',     arcana:'major', suit:null },
-  { id:11, name:'정의',            nameEn:'Justice',              arcana:'major', suit:null },
-  { id:12, name:'매달린 사람',     nameEn:'The Hanged Man',       arcana:'major', suit:null },
-  { id:13, name:'죽음',            nameEn:'Death',                arcana:'major', suit:null },
-  { id:14, name:'절제',            nameEn:'Temperance',           arcana:'major', suit:null },
-  { id:15, name:'악마',            nameEn:'The Devil',            arcana:'major', suit:null },
-  { id:16, name:'탑',              nameEn:'The Tower',            arcana:'major', suit:null },
-  { id:17, name:'별',              nameEn:'The Star',             arcana:'major', suit:null },
-  { id:18, name:'달',              nameEn:'The Moon',             arcana:'major', suit:null },
-  { id:19, name:'태양',            nameEn:'The Sun',              arcana:'major', suit:null },
-  { id:20, name:'심판',            nameEn:'Judgement',            arcana:'major', suit:null },
-  { id:21, name:'세계',            nameEn:'The World',            arcana:'major', suit:null },
-  { id:22, name:'완드 에이스', nameEn:'Ace of Wands',    arcana:'minor', suit:'wands' },
-  { id:23, name:'완드 2',     nameEn:'Two of Wands',    arcana:'minor', suit:'wands' },
-  { id:24, name:'완드 3',     nameEn:'Three of Wands',  arcana:'minor', suit:'wands' },
-  { id:25, name:'완드 4',     nameEn:'Four of Wands',   arcana:'minor', suit:'wands' },
-  { id:26, name:'완드 5',     nameEn:'Five of Wands',   arcana:'minor', suit:'wands' },
-  { id:27, name:'완드 6',     nameEn:'Six of Wands',    arcana:'minor', suit:'wands' },
-  { id:28, name:'완드 7',     nameEn:'Seven of Wands',  arcana:'minor', suit:'wands' },
-  { id:29, name:'완드 8',     nameEn:'Eight of Wands',  arcana:'minor', suit:'wands' },
-  { id:30, name:'완드 9',     nameEn:'Nine of Wands',   arcana:'minor', suit:'wands' },
-  { id:31, name:'완드 10',    nameEn:'Ten of Wands',    arcana:'minor', suit:'wands' },
-  { id:32, name:'완드 페이지',nameEn:'Page of Wands',   arcana:'minor', suit:'wands' },
-  { id:33, name:'완드 나이트',nameEn:'Knight of Wands', arcana:'minor', suit:'wands' },
-  { id:34, name:'완드 퀸',    nameEn:'Queen of Wands',  arcana:'minor', suit:'wands' },
-  { id:35, name:'완드 킹',    nameEn:'King of Wands',   arcana:'minor', suit:'wands' },
-  { id:36, name:'컵 에이스',  nameEn:'Ace of Cups',     arcana:'minor', suit:'cups' },
-  { id:37, name:'컵 2',      nameEn:'Two of Cups',     arcana:'minor', suit:'cups' },
-  { id:38, name:'컵 3',      nameEn:'Three of Cups',   arcana:'minor', suit:'cups' },
-  { id:39, name:'컵 4',      nameEn:'Four of Cups',    arcana:'minor', suit:'cups' },
-  { id:40, name:'컵 5',      nameEn:'Five of Cups',    arcana:'minor', suit:'cups' },
-  { id:41, name:'컵 6',      nameEn:'Six of Cups',     arcana:'minor', suit:'cups' },
-  { id:42, name:'컵 7',      nameEn:'Seven of Cups',   arcana:'minor', suit:'cups' },
-  { id:43, name:'컵 8',      nameEn:'Eight of Cups',   arcana:'minor', suit:'cups' },
-  { id:44, name:'컵 9',      nameEn:'Nine of Cups',    arcana:'minor', suit:'cups' },
-  { id:45, name:'컵 10',     nameEn:'Ten of Cups',     arcana:'minor', suit:'cups' },
-  { id:46, name:'컵 페이지', nameEn:'Page of Cups',    arcana:'minor', suit:'cups' },
-  { id:47, name:'컵 나이트', nameEn:'Knight of Cups',  arcana:'minor', suit:'cups' },
-  { id:48, name:'컵 퀸',     nameEn:'Queen of Cups',   arcana:'minor', suit:'cups' },
-  { id:49, name:'컵 킹',     nameEn:'King of Cups',    arcana:'minor', suit:'cups' },
-  { id:50, name:'소드 에이스', nameEn:'Ace of Swords',    arcana:'minor', suit:'swords' },
-  { id:51, name:'소드 2',     nameEn:'Two of Swords',    arcana:'minor', suit:'swords' },
-  { id:52, name:'소드 3',     nameEn:'Three of Swords',  arcana:'minor', suit:'swords' },
-  { id:53, name:'소드 4',     nameEn:'Four of Swords',   arcana:'minor', suit:'swords' },
-  { id:54, name:'소드 5',     nameEn:'Five of Swords',   arcana:'minor', suit:'swords' },
-  { id:55, name:'소드 6',     nameEn:'Six of Swords',    arcana:'minor', suit:'swords' },
-  { id:56, name:'소드 7',     nameEn:'Seven of Swords',  arcana:'minor', suit:'swords' },
-  { id:57, name:'소드 8',     nameEn:'Eight of Swords',  arcana:'minor', suit:'swords' },
-  { id:58, name:'소드 9',     nameEn:'Nine of Swords',   arcana:'minor', suit:'swords' },
-  { id:59, name:'소드 10',    nameEn:'Ten of Swords',    arcana:'minor', suit:'swords' },
-  { id:60, name:'소드 페이지',nameEn:'Page of Swords',   arcana:'minor', suit:'swords' },
-  { id:61, name:'소드 나이트',nameEn:'Knight of Swords', arcana:'minor', suit:'swords' },
-  { id:62, name:'소드 퀸',    nameEn:'Queen of Swords',  arcana:'minor', suit:'swords' },
-  { id:63, name:'소드 킹',    nameEn:'King of Swords',   arcana:'minor', suit:'swords' },
-  { id:64, name:'펜타클 에이스', nameEn:'Ace of Pentacles',    arcana:'minor', suit:'pentacles' },
-  { id:65, name:'펜타클 2',     nameEn:'Two of Pentacles',    arcana:'minor', suit:'pentacles' },
-  { id:66, name:'펜타클 3',     nameEn:'Three of Pentacles',  arcana:'minor', suit:'pentacles' },
-  { id:67, name:'펜타클 4',     nameEn:'Four of Pentacles',   arcana:'minor', suit:'pentacles' },
-  { id:68, name:'펜타클 5',     nameEn:'Five of Pentacles',   arcana:'minor', suit:'pentacles' },
-  { id:69, name:'펜타클 6',     nameEn:'Six of Pentacles',    arcana:'minor', suit:'pentacles' },
-  { id:70, name:'펜타클 7',     nameEn:'Seven of Pentacles',  arcana:'minor', suit:'pentacles' },
-  { id:71, name:'펜타클 8',     nameEn:'Eight of Pentacles',  arcana:'minor', suit:'pentacles' },
-  { id:72, name:'펜타클 9',     nameEn:'Nine of Pentacles',   arcana:'minor', suit:'pentacles' },
-  { id:73, name:'펜타클 10',    nameEn:'Ten of Pentacles',    arcana:'minor', suit:'pentacles' },
-  { id:74, name:'펜타클 페이지',nameEn:'Page of Pentacles',   arcana:'minor', suit:'pentacles' },
-  { id:75, name:'펜타클 나이트',nameEn:'Knight of Pentacles', arcana:'minor', suit:'pentacles' },
-  { id:76, name:'펜타클 퀸',    nameEn:'Queen of Pentacles',  arcana:'minor', suit:'pentacles' },
-  { id:77, name:'펜타클 킹',    nameEn:'King of Pentacles',   arcana:'minor', suit:'pentacles' },
+  {id:0,name:'바보',nameEn:'The Fool',arcana:'major',suit:null},
+  {id:1,name:'마법사',nameEn:'The Magician',arcana:'major',suit:null},
+  {id:2,name:'여사제',nameEn:'The High Priestess',arcana:'major',suit:null},
+  {id:3,name:'여황제',nameEn:'The Empress',arcana:'major',suit:null},
+  {id:4,name:'황제',nameEn:'The Emperor',arcana:'major',suit:null},
+  {id:5,name:'교황',nameEn:'The Hierophant',arcana:'major',suit:null},
+  {id:6,name:'연인',nameEn:'The Lovers',arcana:'major',suit:null},
+  {id:7,name:'전차',nameEn:'The Chariot',arcana:'major',suit:null},
+  {id:8,name:'힘',nameEn:'Strength',arcana:'major',suit:null},
+  {id:9,name:'은둔자',nameEn:'The Hermit',arcana:'major',suit:null},
+  {id:10,name:'운명의 수레바퀴',nameEn:'Wheel of Fortune',arcana:'major',suit:null},
+  {id:11,name:'정의',nameEn:'Justice',arcana:'major',suit:null},
+  {id:12,name:'매달린 사람',nameEn:'The Hanged Man',arcana:'major',suit:null},
+  {id:13,name:'죽음',nameEn:'Death',arcana:'major',suit:null},
+  {id:14,name:'절제',nameEn:'Temperance',arcana:'major',suit:null},
+  {id:15,name:'악마',nameEn:'The Devil',arcana:'major',suit:null},
+  {id:16,name:'탑',nameEn:'The Tower',arcana:'major',suit:null},
+  {id:17,name:'별',nameEn:'The Star',arcana:'major',suit:null},
+  {id:18,name:'달',nameEn:'The Moon',arcana:'major',suit:null},
+  {id:19,name:'태양',nameEn:'The Sun',arcana:'major',suit:null},
+  {id:20,name:'심판',nameEn:'Judgement',arcana:'major',suit:null},
+  {id:21,name:'세계',nameEn:'The World',arcana:'major',suit:null},
+  {id:22,name:'완드 에이스',nameEn:'Ace of Wands',arcana:'minor',suit:'wands'},
+  {id:23,name:'완드 2',nameEn:'Two of Wands',arcana:'minor',suit:'wands'},
+  {id:24,name:'완드 3',nameEn:'Three of Wands',arcana:'minor',suit:'wands'},
+  {id:25,name:'완드 4',nameEn:'Four of Wands',arcana:'minor',suit:'wands'},
+  {id:26,name:'완드 5',nameEn:'Five of Wands',arcana:'minor',suit:'wands'},
+  {id:27,name:'완드 6',nameEn:'Six of Wands',arcana:'minor',suit:'wands'},
+  {id:28,name:'완드 7',nameEn:'Seven of Wands',arcana:'minor',suit:'wands'},
+  {id:29,name:'완드 8',nameEn:'Eight of Wands',arcana:'minor',suit:'wands'},
+  {id:30,name:'완드 9',nameEn:'Nine of Wands',arcana:'minor',suit:'wands'},
+  {id:31,name:'완드 10',nameEn:'Ten of Wands',arcana:'minor',suit:'wands'},
+  {id:32,name:'완드 페이지',nameEn:'Page of Wands',arcana:'minor',suit:'wands'},
+  {id:33,name:'완드 나이트',nameEn:'Knight of Wands',arcana:'minor',suit:'wands'},
+  {id:34,name:'완드 퀸',nameEn:'Queen of Wands',arcana:'minor',suit:'wands'},
+  {id:35,name:'완드 킹',nameEn:'King of Wands',arcana:'minor',suit:'wands'},
+  {id:36,name:'컵 에이스',nameEn:'Ace of Cups',arcana:'minor',suit:'cups'},
+  {id:37,name:'컵 2',nameEn:'Two of Cups',arcana:'minor',suit:'cups'},
+  {id:38,name:'컵 3',nameEn:'Three of Cups',arcana:'minor',suit:'cups'},
+  {id:39,name:'컵 4',nameEn:'Four of Cups',arcana:'minor',suit:'cups'},
+  {id:40,name:'컵 5',nameEn:'Five of Cups',arcana:'minor',suit:'cups'},
+  {id:41,name:'컵 6',nameEn:'Six of Cups',arcana:'minor',suit:'cups'},
+  {id:42,name:'컵 7',nameEn:'Seven of Cups',arcana:'minor',suit:'cups'},
+  {id:43,name:'컵 8',nameEn:'Eight of Cups',arcana:'minor',suit:'cups'},
+  {id:44,name:'컵 9',nameEn:'Nine of Cups',arcana:'minor',suit:'cups'},
+  {id:45,name:'컵 10',nameEn:'Ten of Cups',arcana:'minor',suit:'cups'},
+  {id:46,name:'컵 페이지',nameEn:'Page of Cups',arcana:'minor',suit:'cups'},
+  {id:47,name:'컵 나이트',nameEn:'Knight of Cups',arcana:'minor',suit:'cups'},
+  {id:48,name:'컵 퀸',nameEn:'Queen of Cups',arcana:'minor',suit:'cups'},
+  {id:49,name:'컵 킹',nameEn:'King of Cups',arcana:'minor',suit:'cups'},
+  {id:50,name:'소드 에이스',nameEn:'Ace of Swords',arcana:'minor',suit:'swords'},
+  {id:51,name:'소드 2',nameEn:'Two of Swords',arcana:'minor',suit:'swords'},
+  {id:52,name:'소드 3',nameEn:'Three of Swords',arcana:'minor',suit:'swords'},
+  {id:53,name:'소드 4',nameEn:'Four of Swords',arcana:'minor',suit:'swords'},
+  {id:54,name:'소드 5',nameEn:'Five of Swords',arcana:'minor',suit:'swords'},
+  {id:55,name:'소드 6',nameEn:'Six of Swords',arcana:'minor',suit:'swords'},
+  {id:56,name:'소드 7',nameEn:'Seven of Swords',arcana:'minor',suit:'swords'},
+  {id:57,name:'소드 8',nameEn:'Eight of Swords',arcana:'minor',suit:'swords'},
+  {id:58,name:'소드 9',nameEn:'Nine of Swords',arcana:'minor',suit:'swords'},
+  {id:59,name:'소드 10',nameEn:'Ten of Swords',arcana:'minor',suit:'swords'},
+  {id:60,name:'소드 페이지',nameEn:'Page of Swords',arcana:'minor',suit:'swords'},
+  {id:61,name:'소드 나이트',nameEn:'Knight of Swords',arcana:'minor',suit:'swords'},
+  {id:62,name:'소드 퀸',nameEn:'Queen of Swords',arcana:'minor',suit:'swords'},
+  {id:63,name:'소드 킹',nameEn:'King of Swords',arcana:'minor',suit:'swords'},
+  {id:64,name:'펜타클 에이스',nameEn:'Ace of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:65,name:'펜타클 2',nameEn:'Two of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:66,name:'펜타클 3',nameEn:'Three of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:67,name:'펜타클 4',nameEn:'Four of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:68,name:'펜타클 5',nameEn:'Five of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:69,name:'펜타클 6',nameEn:'Six of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:70,name:'펜타클 7',nameEn:'Seven of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:71,name:'펜타클 8',nameEn:'Eight of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:72,name:'펜타클 9',nameEn:'Nine of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:73,name:'펜타클 10',nameEn:'Ten of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:74,name:'펜타클 페이지',nameEn:'Page of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:75,name:'펜타클 나이트',nameEn:'Knight of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:76,name:'펜타클 퀸',nameEn:'Queen of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:77,name:'펜타클 킹',nameEn:'King of Pentacles',arcana:'minor',suit:'pentacles'},
 ];
 
-const FORTUNE_TYPES = ['solo', 'couple', 'reunion'];
-const FORTUNE_LABELS = { solo: '솔로운', couple: '커플운', reunion: '재회운' };
-const FORTUNE_PLACEHOLDERS = {
+const SPREADS = {
   solo: {
-    norm: '이 카드가 솔로인 내담자에게 전하는 메시지를 적어주세요.\n예) 새로운 시작의 에너지가 넘쳐흐르는 카드입니다. 두려움 없이 새로운 만남에 뛰어들 준비가 되어 있음을 나타냅니다...',
-    rev:  '역방향일 때의 솔로운 해석을 적어주세요.\n예) 새로운 만남에 대한 불안감이나 두려움이 발목을 잡고 있을 수 있습니다...',
+    label: '솔로운',
+    positions: [
+      {name:'과거의 연애 에너지'},
+      {name:'현재의 나'},
+      {name:'다가올 인연'},
+    ],
   },
   couple: {
-    norm: '이 카드가 연인이 있는 내담자에게 전하는 메시지를 적어주세요.\n예) 두 사람 사이에 신선한 에너지와 설렘이 흐르고 있음을 나타냅니다...',
-    rev:  '역방향일 때의 커플운 해석을 적어주세요.\n예) 관계에서 열정이 식어가거나 소통이 부족해지고 있을 수 있습니다...',
+    label: '커플운',
+    positions: [
+      {name:'나의 마음'},
+      {name:'상대방의 마음'},
+      {name:'관계의 현재'},
+      {name:'극복할 과제'},
+      {name:'관계의 미래'},
+    ],
   },
   reunion: {
-    norm: '이 카드가 재회를 원하는 내담자에게 전하는 메시지를 적어주세요.\n예) 상대방에게 과거의 감정이 아직 남아있으며, 새로운 시작의 가능성이 열려 있음을 나타냅니다...',
-    rev:  '역방향일 때의 재회운 해석을 적어주세요.\n예) 재회에 대한 집착이 오히려 상대를 멀어지게 할 수 있습니다...',
+    label: '재회운',
+    positions: [
+      {name:'현재 나의 감정'},
+      {name:'상대방의 감정'},
+      {name:'재회의 장애물'},
+      {name:'재회를 위한 조언'},
+      {name:'재회 가능성'},
+    ],
   },
 };
 
+const FORTUNE_TYPES = ['solo','couple','reunion'];
+
+let data = {};
 let currentFilter = 'all';
 let currentCardId = null;
 let currentFortune = 'solo';
-let data = {};
+let currentPosIdx  = 0;
 
-function loadData() {
-  data = JSON.parse(localStorage.getItem('tarot-interp') || '{}');
-}
+function loadData() { data = JSON.parse(localStorage.getItem('tarot-interp') || '{}'); }
+function saveData() { localStorage.setItem('tarot-interp', JSON.stringify(data)); }
 
-function saveData() {
-  localStorage.setItem('tarot-interp', JSON.stringify(data));
-}
-
-function getDataStatus(cardId) {
-  const total = FORTUNE_TYPES.length * 2; // norm + rev for each type
-  let filled = 0;
+// ── completion tracking ────────────────────
+function getCardStatus(cardId) {
+  let total = 0, filled = 0;
   FORTUNE_TYPES.forEach(ft => {
-    ['norm', 'rev'].forEach(dir => {
-      const key = `${cardId}_${ft}_${dir}`;
-      if (data[key] && data[key].trim()) filled++;
+    SPREADS[ft].positions.forEach((_, pi) => {
+      ['norm','rev'].forEach(dir => {
+        total++;
+        const k = `${cardId}_${ft}_p${pi}_${dir}`;
+        if (data[k] && data[k].trim()) filled++;
+      });
     });
   });
   if (filled === 0) return 'empty';
@@ -558,77 +292,17 @@ function getDataStatus(cardId) {
   return 'partial';
 }
 
-function getArtStyle(card) {
-  const g = {
-    major: 'linear-gradient(145deg, #9B8FD4, #6050A8, #8B4E8C)',
-    wands: 'linear-gradient(145deg, #E8A058, #C07830, #A05820)',
-    cups:  'linear-gradient(145deg, #6898D8, #4878B8, #285898)',
-    swords:'linear-gradient(145deg, #88AACC, #6888AA, #486888)',
-    pentacles: 'linear-gradient(145deg, #78B868, #589848, #387828)',
-  };
-  const k = card.arcana === 'major' ? 'major' : card.suit;
-  return `background: ${g[k] || g.major}`;
-}
-function getCardSymbol(card) {
-  if (card.arcana === 'major') return '★';
-  return { wands:'🔥', cups:'💧', swords:'⚔️', pentacles:'⭐' }[card.suit] || '✦';
-}
-function getArcanaBadgeClass(card) {
-  if (card.arcana === 'major') return 'arcana-major';
-  return `arcana-minor-${card.suit}`;
-}
-function getArcanaBadgeLabel(card) {
-  if (card.arcana === 'major') return '메이저 아르카나';
-  const suits = { wands:'완드', cups:'컵', swords:'소드', pentacles:'펜타클' };
-  return `마이너 아르카나 · ${suits[card.suit]}`;
+function getPosStatus(cardId, ft, pi) {
+  const n = data[`${cardId}_${ft}_p${pi}_norm`];
+  const r = data[`${cardId}_${ft}_p${pi}_rev`];
+  const nf = !!(n && n.trim());
+  const rf = !!(r && r.trim());
+  if (nf && rf) return 'full';
+  if (nf || rf) return 'partial';
+  return 'empty';
 }
 
-// ── LIST RENDERING ────────────────────────
-function renderList() {
-  const search = document.getElementById('search-input').value.toLowerCase();
-  const list   = document.getElementById('card-list');
-  list.innerHTML = '';
-
-  const groups = [
-    { key: 'major',     label: '메이저 아르카나 (22장)',      cards: CARDS.filter(c => c.arcana === 'major') },
-    { key: 'wands',     label: '완드 (Wands) · 14장',        cards: CARDS.filter(c => c.suit === 'wands') },
-    { key: 'cups',      label: '컵 (Cups) · 14장',           cards: CARDS.filter(c => c.suit === 'cups') },
-    { key: 'swords',    label: '소드 (Swords) · 14장',       cards: CARDS.filter(c => c.suit === 'swords') },
-    { key: 'pentacles', label: '펜타클 (Pentacles) · 14장',  cards: CARDS.filter(c => c.suit === 'pentacles') },
-  ];
-
-  groups.forEach(group => {
-    if (currentFilter !== 'all' && currentFilter !== group.key) return;
-
-    const filtered = group.cards.filter(c =>
-      !search || c.name.includes(search) || c.nameEn.toLowerCase().includes(search)
-    );
-    if (!filtered.length) return;
-
-    const header = document.createElement('div');
-    header.className = 'list-section-header';
-    header.textContent = group.label;
-    list.appendChild(header);
-
-    filtered.forEach(card => {
-      const status = getDataStatus(card.id);
-      const item = document.createElement('div');
-      item.className = `list-item ${status === 'full' ? 'has-data' : status === 'partial' ? 'partial-data' : ''} ${currentCardId === card.id ? 'active' : ''}`;
-      item.innerHTML = `
-        <div class="item-dot"></div>
-        <div>
-          <div class="item-name">${card.name}</div>
-          <div class="item-en">${card.nameEn}</div>
-        </div>
-      `;
-      item.onclick = () => selectCard(card.id);
-      list.appendChild(item);
-    });
-  });
-}
-
-function filterCards() { renderList(); }
-
+// ── list ────────────────────────────────────
 function setFilter(f, btn) {
   currentFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -636,187 +310,208 @@ function setFilter(f, btn) {
   renderList();
 }
 
-// ── EDITOR ───────────────────────────────
-function selectCard(id) {
-  // auto-save current before switching
-  if (currentCardId !== null) collectCurrentFields();
+function renderList() {
+  const search = (document.getElementById('search-input').value || '').toLowerCase();
+  const list   = document.getElementById('card-list');
+  list.innerHTML = '';
 
+  const groups = [
+    {key:'major',     label:'메이저 아르카나', cards: CARDS.filter(c=>c.arcana==='major')},
+    {key:'wands',     label:'완드 (Wands)',     cards: CARDS.filter(c=>c.suit==='wands')},
+    {key:'cups',      label:'컵 (Cups)',        cards: CARDS.filter(c=>c.suit==='cups')},
+    {key:'swords',    label:'소드 (Swords)',    cards: CARDS.filter(c=>c.suit==='swords')},
+    {key:'pentacles', label:'펜타클',           cards: CARDS.filter(c=>c.suit==='pentacles')},
+  ];
+
+  groups.forEach(g => {
+    if (currentFilter !== 'all' && currentFilter !== g.key) return;
+    const filtered = g.cards.filter(c => !search || c.name.includes(search) || c.nameEn.toLowerCase().includes(search));
+    if (!filtered.length) return;
+    const h = document.createElement('div');
+    h.className = 'list-section-header'; h.textContent = g.label;
+    list.appendChild(h);
+    filtered.forEach(card => {
+      const status = getCardStatus(card.id);
+      const item   = document.createElement('div');
+      item.className = `list-item${status==='full'?' has-data':status==='partial'?' partial-data':''}${currentCardId===card.id?' active':''}`;
+      item.innerHTML = `<div class="item-dot"></div><div><div class="item-name">${card.name}</div><div class="item-en">${card.nameEn}</div></div>`;
+      item.onclick = () => selectCard(card.id);
+      list.appendChild(item);
+    });
+  });
+}
+
+// ── editor ─────────────────────────────────
+function selectCard(id) {
+  if (currentCardId !== null) collectFields();
   currentCardId = id;
+  currentPosIdx = 0;
   renderList();
   renderEditor();
 }
 
-function renderEditor() {
-  const card = CARDS.find(c => c.id === currentCardId);
-  if (!card) return;
+function getArtStyle(card) {
+  const g={major:'linear-gradient(145deg,#9B8FD4,#6050A8,#8B4E8C)',wands:'linear-gradient(145deg,#E8A058,#C07830)',cups:'linear-gradient(145deg,#6898D8,#4878B8)',swords:'linear-gradient(145deg,#88AACC,#6888AA)',pentacles:'linear-gradient(145deg,#78B868,#589848)'};
+  return `background:${g[card.arcana==='major'?'major':card.suit]||g.major}`;
+}
+function getArcanaClass(card) { return card.arcana==='major'?'arcana-major':`arcana-minor-${card.suit}`; }
+function getArcanaLabel(card) { if(card.arcana==='major')return '메이저 아르카나'; const s={wands:'완드',cups:'컵',swords:'소드',pentacles:'펜타클'}; return `마이너 아르카나 · ${s[card.suit]}`; }
+function getSymbol(card) { if(card.arcana==='major')return '★'; return{wands:'🔥',cups:'💧',swords:'⚔️',pentacles:'⭐'}[card.suit]||'✦'; }
 
+function renderEditor() {
+  const card = CARDS.find(c=>c.id===currentCardId);
   const main = document.getElementById('editor-main');
 
-  // progress
-  const progItems = FORTUNE_TYPES.map(ft => {
-    const nKey = `${card.id}_${ft}_norm`;
-    const rKey = `${card.id}_${ft}_rev`;
-    const nFilled = !!(data[nKey] && data[nKey].trim());
-    const rFilled = !!(data[rKey] && data[rKey].trim());
-    const cls = nFilled && rFilled ? 'filled' : (nFilled || rFilled ? 'half' : '');
-    return `<div class="prog-item"><div class="prog-dot ${cls}"></div>${FORTUNE_LABELS[ft]}</div>`;
+  // completion summary
+  const compItems = FORTUNE_TYPES.map(ft => {
+    const total = SPREADS[ft].positions.length * 2;
+    let filled  = 0;
+    SPREADS[ft].positions.forEach((_,pi) => {
+      ['norm','rev'].forEach(dir => {
+        if ((data[`${card.id}_${ft}_p${pi}_${dir}`]||'').trim()) filled++;
+      });
+    });
+    const cls = filled===0?'':filled===total?'full':'partial';
+    return `<div class="comp-item"><div class="comp-dot ${cls}"></div>${SPREADS[ft].label} (${filled}/${total})</div>`;
   }).join('');
 
   main.innerHTML = `
     <div class="editor-card-header">
-      <div class="card-art-preview" style="${getArtStyle(card)}">${getCardSymbol(card)}</div>
+      <div class="card-art-preview" style="${getArtStyle(card)}">${getSymbol(card)}</div>
       <div class="card-header-info">
         <h2>${card.name}</h2>
         <div class="en-name">${card.nameEn}</div>
-        <span class="arcana-badge ${getArcanaBadgeClass(card)}">${getArcanaBadgeLabel(card)}</span>
+        <span class="arcana-badge ${getArcanaClass(card)}">${getArcanaLabel(card)}</span>
       </div>
     </div>
-
-    <div class="progress-indicator">${progItems}</div>
-
+    <div class="completion-bar">${compItems}</div>
     <div class="fortune-tabs">
-      ${FORTUNE_TYPES.map(ft => `
-        <button class="fortune-tab ${ft === currentFortune ? 'active' : ''}"
-          onclick="switchFortune('${ft}')">${FORTUNE_LABELS[ft]}</button>
+      ${FORTUNE_TYPES.map(ft=>`
+        <button class="fortune-tab ${ft===currentFortune?'active':''}" onclick="switchFortune('${ft}')">${SPREADS[ft].label}</button>
       `).join('')}
     </div>
-
-    <div id="fortune-fields"></div>
-  `;
-
-  renderFortuneFields();
-}
-
-function renderFortuneFields() {
-  const card = CARDS.find(c => c.id === currentCardId);
-  const ft   = currentFortune;
-  const nKey = `${card.id}_${ft}_norm`;
-  const rKey = `${card.id}_${ft}_rev`;
-  const ph   = FORTUNE_PLACEHOLDERS[ft];
-
-  document.getElementById('fortune-fields').innerHTML = `
-    <div class="interp-section">
-      <div class="interp-section-header">
-        <h3>정방향 해석</h3>
-        <span class="char-count" id="norm-count">${(data[nKey] || '').length}자</span>
-      </div>
-      <textarea id="field-norm" rows="6"
-        placeholder="${ph.norm}"
-        oninput="onFieldInput('norm')">${escHtml(data[nKey] || '')}</textarea>
-
-      <div class="divider-label"></div>
-
-      <div class="interp-section-header" style="background:linear-gradient(135deg,#FFF8E8,#FFF0F5);">
-        <h3>역방향 해석</h3>
-        <span class="char-count" id="rev-count">${(data[rKey] || '').length}자</span>
-      </div>
-      <textarea id="field-rev" rows="6"
-        placeholder="${ph.rev}"
-        oninput="onFieldInput('rev')">${escHtml(data[rKey] || '')}</textarea>
-    </div>
-
-    <div style="display:flex;gap:10px;margin-top:4px;">
-      <button class="btn btn-save" onclick="saveCurrentCard()" style="flex:1;padding:12px;">
-        💾 이 카드 저장
-      </button>
-      <button class="btn btn-outline" onclick="nextCard()"
-        style="background:#F0EAF8;color:var(--purple-dark);border-color:var(--border);padding:12px 16px;">
-        다음 카드 →
-      </button>
+    <div id="pos-tabs-row"></div>
+    <div id="pos-fields"></div>
+    <div class="action-row">
+      <button class="btn-save-card" onclick="saveCard()">💾 저장</button>
+      <button class="btn-next" onclick="nextCard()">다음 카드 →</button>
     </div>
   `;
+
+  renderPosTabs();
+  renderPosFields();
 }
 
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function renderPosTabs() {
+  const card = CARDS.find(c=>c.id===currentCardId);
+  const positions = SPREADS[currentFortune].positions;
+  const row = document.getElementById('pos-tabs-row');
+  row.innerHTML = `<div class="position-tabs">
+    ${positions.map((p,i)=>{
+      const status = getPosStatus(card.id, currentFortune, i);
+      return `<button class="pos-tab ${status==='full'?'filled':''} ${i===currentPosIdx?'active':''}"
+        onclick="switchPos(${i})">${i+1}번째</button>`;
+    }).join('')}
+  </div>`;
 }
 
-function onFieldInput(dir) {
-  const el = document.getElementById(`field-${dir}`);
-  const count = document.getElementById(`${dir}-count`);
-  if (count) count.textContent = el.value.length + '자';
+function renderPosFields() {
+  const card = CARDS.find(c=>c.id===currentCardId);
+  const pos  = SPREADS[currentFortune].positions[currentPosIdx];
+  const nKey = `${card.id}_${currentFortune}_p${currentPosIdx}_norm`;
+  const rKey = `${card.id}_${currentFortune}_p${currentPosIdx}_rev`;
+
+  document.getElementById('pos-fields').innerHTML = `
+    <div style="margin-bottom:10px;">
+      <span class="pos-name-label">📌 ${pos.name}</span>
+    </div>
+    <div class="field-section">
+      <div class="field-header upright">
+        <h4>정방향 해석</h4>
+        <span class="char-count" id="n-count">${(data[nKey]||'').length}자</span>
+      </div>
+      <textarea id="f-norm" rows="5"
+        placeholder="${pos.name} 자리에 이 카드가 정방향으로 나왔을 때의 해석을 작성하세요..."
+        oninput="onInput('n-count','f-norm')">${esc(data[nKey]||'')}</textarea>
+    </div>
+    <div class="field-section">
+      <div class="field-header reversed">
+        <h4>역방향 해석</h4>
+        <span class="char-count" id="r-count">${(data[rKey]||'').length}자</span>
+      </div>
+      <textarea id="f-rev" rows="5"
+        placeholder="${pos.name} 자리에 이 카드가 역방향으로 나왔을 때의 해석을 작성하세요..."
+        oninput="onInput('r-count','f-rev')">${esc(data[rKey]||'')}</textarea>
+    </div>
+  `;
 }
 
-function switchFortune(ft) {
-  collectCurrentFields();
-  currentFortune = ft;
-  renderEditor();
+function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function onInput(countId, fieldId) {
+  const el = document.getElementById(fieldId);
+  const c  = document.getElementById(countId);
+  if (el && c) c.textContent = el.value.length + '자';
 }
 
-function collectCurrentFields() {
+function switchFortune(ft) { collectFields(); currentFortune = ft; currentPosIdx = 0; renderEditor(); }
+function switchPos(pi)     { collectFields(); currentPosIdx = pi; renderPosTabs(); renderPosFields(); }
+
+function collectFields() {
   if (currentCardId === null) return;
-  const normEl = document.getElementById('field-norm');
-  const revEl  = document.getElementById('field-rev');
-  if (!normEl || !revEl) return;
-
-  const card = CARDS.find(c => c.id === currentCardId);
-  data[`${card.id}_${currentFortune}_norm`] = normEl.value;
-  data[`${card.id}_${currentFortune}_rev`]  = revEl.value;
+  const n = document.getElementById('f-norm');
+  const r = document.getElementById('f-rev');
+  if (!n || !r) return;
+  const card = CARDS.find(c=>c.id===currentCardId);
+  data[`${card.id}_${currentFortune}_p${currentPosIdx}_norm`] = n.value;
+  data[`${card.id}_${currentFortune}_p${currentPosIdx}_rev`]  = r.value;
 }
 
-function saveCurrentCard() {
-  collectCurrentFields();
-  saveData();
-  renderList();
-  showToast('저장되었습니다');
+function saveCard() {
+  collectFields(); saveData(); renderList(); renderPosTabs();
+  toast('저장되었습니다');
 }
 
 function saveAll() {
-  collectCurrentFields();
-  saveData();
-  renderList();
-  showToast('전체 저장 완료!');
+  collectFields(); saveData(); renderList();
+  toast('전체 저장 완료!');
 }
 
 function nextCard() {
-  collectCurrentFields();
-  saveData();
-  if (currentCardId === null) return;
-  const idx = CARDS.findIndex(c => c.id === currentCardId);
-  const next = CARDS[idx + 1];
+  collectFields(); saveData();
+  const idx  = CARDS.findIndex(c=>c.id===currentCardId);
+  const next = CARDS[idx+1];
   if (next) selectCard(next.id);
 }
 
-function showToast(msg) {
+function toast(msg) {
   const t = document.getElementById('save-toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-// ── EXPORT / IMPORT ───────────────────────
+// ── export / import ─────────────────────────
 function exportData() {
-  collectCurrentFields();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  collectFields();
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
-  a.href     = url;
-  a.download = 'tarot-interpretations.json';
-  a.click();
+  a.href = url; a.download = 'tarot-interpretations.json'; a.click();
   URL.revokeObjectURL(url);
 }
-
 function importData(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
+  const file = e.target.files[0]; if(!file) return;
+  const r    = new FileReader();
+  r.onload   = ev => {
     try {
-      const imported = JSON.parse(ev.target.result);
-      data = { ...data, ...imported };
-      saveData();
-      renderList();
-      if (currentCardId !== null) renderEditor();
-      showToast('가져오기 완료!');
-    } catch {
-      alert('올바른 JSON 파일이 아닙니다.');
-    }
+      data = { ...data, ...JSON.parse(ev.target.result) };
+      saveData(); renderList();
+      if (currentCardId!==null) renderEditor();
+      toast('가져오기 완료!');
+    } catch { alert('올바른 JSON 파일이 아닙니다.'); }
   };
-  reader.readAsText(file);
-  e.target.value = '';
+  r.readAsText(file); e.target.value='';
 }
 
-// ── INIT ──────────────────────────────────
 loadData();
 renderList();
 </script>

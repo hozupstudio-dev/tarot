@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>타로 카드 이미지 에디터</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #F8F5FF; --surface: #fff;
+  --purple: #8B7BB8; --purple-dark: #6A5A98;
+  --gold: #C9A96E; --text: #2E2640; --text-mid: #5E5472;
+  --text-soft: #9188A0; --border: #E0D8F0;
+}
+body { font-family: 'Apple SD Gothic Neo','Noto Sans KR','Segoe UI',sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+.topbar { background: var(--purple-dark); color: #fff; padding: 12px 20px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+.topbar h1 { font-size: 16px; font-weight: 700; flex: 1; }
+.btn { padding: 7px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; text-decoration: none; display: inline-block; }
+.btn-outline { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.35); }
+.btn-gold { background: var(--gold); color: #fff; }
+.btn-danger { background: #E05555; color: #fff; }
+
+.toolbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.toolbar-note { font-size: 12px; color: var(--text-soft); flex: 1; line-height: 1.5; }
+.stats { font-size: 12px; color: var(--purple); font-weight: 600; background: #EDE8FF; padding: 5px 12px; border-radius: 8px; white-space: nowrap; }
+
+.filter-row { padding: 12px 20px; display: flex; gap: 8px; flex-wrap: wrap; background: var(--surface); border-bottom: 1px solid var(--border); }
+.filter-btn { padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-mid); transition: all 0.15s; }
+.filter-btn.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+.search-bar { padding: 10px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.search-bar input { width: 100%; max-width: 360px; padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; color: var(--text); background: var(--bg); outline: none; }
+.search-bar input:focus { border-color: var(--purple); }
+
+main { flex: 1; padding: 20px; }
+
+.section-title { font-size: 13px; font-weight: 700; color: var(--text-soft); letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 12px; margin-top: 20px; }
+.section-title:first-child { margin-top: 0; }
+
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 8px; }
+
+.card-item { background: var(--surface); border-radius: 12px; border: 1.5px solid var(--border); overflow: hidden; cursor: pointer; transition: all 0.2s; position: relative; }
+.card-item:hover { border-color: var(--purple); box-shadow: 0 4px 16px rgba(139,123,184,0.2); transform: translateY(-2px); }
+.card-item.has-image { border-color: #5CAD6C; }
+.card-item.has-image:hover { border-color: #4A9C5A; }
+
+.card-preview {
+  height: 130px; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  background: linear-gradient(145deg, #9B8FD4, #6050A8, #8B4E8C);
+}
+.card-preview img { width: 100%; height: 100%; object-fit: cover; }
+.card-preview .default-art { font-size: 28px; color: rgba(255,255,255,0.4); }
+.card-preview.wands    { background: linear-gradient(145deg, #E8A058, #C07830, #A05820); }
+.card-preview.cups     { background: linear-gradient(145deg, #6898D8, #4878B8, #285898); }
+.card-preview.swords   { background: linear-gradient(145deg, #88AACC, #6888AA, #486888); }
+.card-preview.pentacles{ background: linear-gradient(145deg, #78B868, #589848, #387828); }
+
+.has-image-badge {
+  position: absolute; top: 6px; right: 6px;
+  background: #5CAD6C; color: #fff; font-size: 10px; font-weight: 700;
+  padding: 2px 6px; border-radius: 6px;
+}
+
+.card-info { padding: 8px 10px; }
+.card-info .name { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card-info .en   { font-size: 10px; color: var(--text-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.upload-overlay {
+  position: absolute; inset: 0; background: rgba(139,123,184,0.85);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s; flex-direction: column; gap: 6px;
+}
+.card-item:hover .upload-overlay { opacity: 1; }
+.upload-overlay span { color: #fff; font-size: 12px; font-weight: 700; }
+.upload-overlay .upload-icon { font-size: 24px; }
+
+/* hidden file input */
+.hidden-input { display: none; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--surface); border-radius: 20px; padding: 24px; max-width: 380px; width: 100%; }
+.modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.modal .card-name { font-size: 14px; color: var(--text-mid); margin-bottom: 16px; }
+.modal-preview-wrap { width: 100%; height: 240px; border-radius: 12px; overflow: hidden; margin-bottom: 16px; background: linear-gradient(145deg, #9B8FD4, #6050A8); display: flex; align-items: center; justify-content: center; }
+.modal-preview-wrap img { width: 100%; height: 100%; object-fit: contain; }
+.modal-preview-wrap .no-img { font-size: 40px; color: rgba(255,255,255,0.4); }
+.modal-actions { display: flex; flex-direction: column; gap: 8px; }
+.modal-btn { width: 100%; padding: 13px; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.modal-btn-upload { background: linear-gradient(135deg, var(--purple), var(--purple-dark)); color: #fff; }
+.modal-btn-url { background: var(--bg); color: var(--text-mid); border: 1.5px solid var(--border); }
+.modal-btn-remove { background: #FFE8E6; color: #C04040; }
+.modal-btn-close { background: none; color: var(--text-soft); font-size: 13px; }
+.url-input-row { display: flex; gap: 8px; margin-top: -2px; }
+.url-input-row input { flex: 1; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px; font-size: 13px; color: var(--text); background: var(--bg); outline: none; }
+.url-input-row input:focus { border-color: var(--purple); }
+.url-input-row button { padding: 10px 14px; background: var(--purple); color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.url-section { display: none; margin-top: 8px; }
+.url-section.open { display: block; }
+
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(8px); background: #2E2640; color: #fff; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(0,0,0,0.2); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.7s linear infinite; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🖼 카드 이미지 에디터</h1>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="btn btn-danger" onclick="clearAllImages()" style="font-size:11px;">전체 삭제</button>
+    <a href="cards-editor.html" class="btn btn-outline">✏️ 해석 에디터</a>
+    <a href="index.html" class="btn btn-gold">← 사이트</a>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="toolbar-note">
+    카드를 클릭해 이미지를 업로드하거나 URL을 입력하세요.<br>
+    이미지는 이 기기의 브라우저(IndexedDB)에 저장됩니다.
+  </div>
+  <div class="stats" id="stats-badge">불러오는 중...</div>
+</div>
+
+<div class="filter-row">
+  <button class="filter-btn active" onclick="setFilter('all',this)">전체 (78)</button>
+  <button class="filter-btn" onclick="setFilter('major',this)">메이저 (22)</button>
+  <button class="filter-btn" onclick="setFilter('wands',this)">완드 (14)</button>
+  <button class="filter-btn" onclick="setFilter('cups',this)">컵 (14)</button>
+  <button class="filter-btn" onclick="setFilter('swords',this)">소드 (14)</button>
+  <button class="filter-btn" onclick="setFilter('pentacles',this)">펜타클 (14)</button>
+  <button class="filter-btn" onclick="setFilter('no-image',this)">이미지 없음</button>
+</div>
+
+<div class="search-bar">
+  <input type="text" id="search-input" placeholder="카드 이름으로 검색..." oninput="renderGrid()">
+</div>
+
+<main id="main-grid"></main>
+
+<!-- hidden file inputs -->
+<input type="file" id="file-input" class="hidden-input" accept="image/*" onchange="handleFileSelect(event)">
+
+<!-- card modal -->
+<div class="modal-overlay" id="card-modal">
+  <div class="modal">
+    <h3 id="modal-card-name">카드 이름</h3>
+    <div class="card-name" id="modal-card-en"></div>
+    <div class="modal-preview-wrap" id="modal-preview">
+      <div class="no-img">✦</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-upload" onclick="triggerFileInput()">📁 파일에서 업로드</button>
+      <button class="modal-btn modal-btn-url" onclick="toggleUrlInput()">🔗 URL로 입력</button>
+      <div class="url-section" id="url-section">
+        <div class="url-input-row">
+          <input type="url" id="url-input" placeholder="https://...">
+          <button onclick="applyUrl()">적용</button>
+        </div>
+      </div>
+      <button class="modal-btn modal-btn-remove" id="modal-remove-btn" onclick="removeCurrentImage()" style="display:none;">🗑 이미지 삭제</button>
+      <button class="modal-btn modal-btn-close" onclick="closeModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CARDS = [
+  {id:0,name:'바보',nameEn:'The Fool',arcana:'major',suit:null},
+  {id:1,name:'마법사',nameEn:'The Magician',arcana:'major',suit:null},
+  {id:2,name:'여사제',nameEn:'The High Priestess',arcana:'major',suit:null},
+  {id:3,name:'여황제',nameEn:'The Empress',arcana:'major',suit:null},
+  {id:4,name:'황제',nameEn:'The Emperor',arcana:'major',suit:null},
+  {id:5,name:'교황',nameEn:'The Hierophant',arcana:'major',suit:null},
+  {id:6,name:'연인',nameEn:'The Lovers',arcana:'major',suit:null},
+  {id:7,name:'전차',nameEn:'The Chariot',arcana:'major',suit:null},
+  {id:8,name:'힘',nameEn:'Strength',arcana:'major',suit:null},
+  {id:9,name:'은둔자',nameEn:'The Hermit',arcana:'major',suit:null},
+  {id:10,name:'운명의 수레바퀴',nameEn:'Wheel of Fortune',arcana:'major',suit:null},
+  {id:11,name:'정의',nameEn:'Justice',arcana:'major',suit:null},
+  {id:12,name:'매달린 사람',nameEn:'The Hanged Man',arcana:'major',suit:null},
+  {id:13,name:'죽음',nameEn:'Death',arcana:'major',suit:null},
+  {id:14,name:'절제',nameEn:'Temperance',arcana:'major',suit:null},
+  {id:15,name:'악마',nameEn:'The Devil',arcana:'major',suit:null},
+  {id:16,name:'탑',nameEn:'The Tower',arcana:'major',suit:null},
+  {id:17,name:'별',nameEn:'The Star',arcana:'major',suit:null},
+  {id:18,name:'달',nameEn:'The Moon',arcana:'major',suit:null},
+  {id:19,name:'태양',nameEn:'The Sun',arcana:'major',suit:null},
+  {id:20,name:'심판',nameEn:'Judgement',arcana:'major',suit:null},
+  {id:21,name:'세계',nameEn:'The World',arcana:'major',suit:null},
+  {id:22,name:'완드 에이스',nameEn:'Ace of Wands',arcana:'minor',suit:'wands'},
+  {id:23,name:'완드 2',nameEn:'Two of Wands',arcana:'minor',suit:'wands'},
+  {id:24,name:'완드 3',nameEn:'Three of Wands',arcana:'minor',suit:'wands'},
+  {id:25,name:'완드 4',nameEn:'Four of Wands',arcana:'minor',suit:'wands'},
+  {id:26,name:'완드 5',nameEn:'Five of Wands',arcana:'minor',suit:'wands'},
+  {id:27,name:'완드 6',nameEn:'Six of Wands',arcana:'minor',suit:'wands'},
+  {id:28,name:'완드 7',nameEn:'Seven of Wands',arcana:'minor',suit:'wands'},
+  {id:29,name:'완드 8',nameEn:'Eight of Wands',arcana:'minor',suit:'wands'},
+  {id:30,name:'완드 9',nameEn:'Nine of Wands',arcana:'minor',suit:'wands'},
+  {id:31,name:'완드 10',nameEn:'Ten of Wands',arcana:'minor',suit:'wands'},
+  {id:32,name:'완드 페이지',nameEn:'Page of Wands',arcana:'minor',suit:'wands'},
+  {id:33,name:'완드 나이트',nameEn:'Knight of Wands',arcana:'minor',suit:'wands'},
+  {id:34,name:'완드 퀸',nameEn:'Queen of Wands',arcana:'minor',suit:'wands'},
+  {id:35,name:'완드 킹',nameEn:'King of Wands',arcana:'minor',suit:'wands'},
+  {id:36,name:'컵 에이스',nameEn:'Ace of Cups',arcana:'minor',suit:'cups'},
+  {id:37,name:'컵 2',nameEn:'Two of Cups',arcana:'minor',suit:'cups'},
+  {id:38,name:'컵 3',nameEn:'Three of Cups',arcana:'minor',suit:'cups'},
+  {id:39,name:'컵 4',nameEn:'Four of Cups',arcana:'minor',suit:'cups'},
+  {id:40,name:'컵 5',nameEn:'Five of Cups',arcana:'minor',suit:'cups'},
+  {id:41,name:'컵 6',nameEn:'Six of Cups',arcana:'minor',suit:'cups'},
+  {id:42,name:'컵 7',nameEn:'Seven of Cups',arcana:'minor',suit:'cups'},
+  {id:43,name:'컵 8',nameEn:'Eight of Cups',arcana:'minor',suit:'cups'},
+  {id:44,name:'컵 9',nameEn:'Nine of Cups',arcana:'minor',suit:'cups'},
+  {id:45,name:'컵 10',nameEn:'Ten of Cups',arcana:'minor',suit:'cups'},
+  {id:46,name:'컵 페이지',nameEn:'Page of Cups',arcana:'minor',suit:'cups'},
+  {id:47,name:'컵 나이트',nameEn:'Knight of Cups',arcana:'minor',suit:'cups'},
+  {id:48,name:'컵 퀸',nameEn:'Queen of Cups',arcana:'minor',suit:'cups'},
+  {id:49,name:'컵 킹',nameEn:'King of Cups',arcana:'minor',suit:'cups'},
+  {id:50,name:'소드 에이스',nameEn:'Ace of Swords',arcana:'minor',suit:'swords'},
+  {id:51,name:'소드 2',nameEn:'Two of Swords',arcana:'minor',suit:'swords'},
+  {id:52,name:'소드 3',nameEn:'Three of Swords',arcana:'minor',suit:'swords'},
+  {id:53,name:'소드 4',nameEn:'Four of Swords',arcana:'minor',suit:'swords'},
+  {id:54,name:'소드 5',nameEn:'Five of Swords',arcana:'minor',suit:'swords'},
+  {id:55,name:'소드 6',nameEn:'Six of Swords',arcana:'minor',suit:'swords'},
+  {id:56,name:'소드 7',nameEn:'Seven of Swords',arcana:'minor',suit:'swords'},
+  {id:57,name:'소드 8',nameEn:'Eight of Swords',arcana:'minor',suit:'swords'},
+  {id:58,name:'소드 9',nameEn:'Nine of Swords',arcana:'minor',suit:'swords'},
+  {id:59,name:'소드 10',nameEn:'Ten of Swords',arcana:'minor',suit:'swords'},
+  {id:60,name:'소드 페이지',nameEn:'Page of Swords',arcana:'minor',suit:'swords'},
+  {id:61,name:'소드 나이트',nameEn:'Knight of Swords',arcana:'minor',suit:'swords'},
+  {id:62,name:'소드 퀸',nameEn:'Queen of Swords',arcana:'minor',suit:'swords'},
+  {id:63,name:'소드 킹',nameEn:'King of Swords',arcana:'minor',suit:'swords'},
+  {id:64,name:'펜타클 에이스',nameEn:'Ace of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:65,name:'펜타클 2',nameEn:'Two of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:66,name:'펜타클 3',nameEn:'Three of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:67,name:'펜타클 4',nameEn:'Four of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:68,name:'펜타클 5',nameEn:'Five of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:69,name:'펜타클 6',nameEn:'Six of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:70,name:'펜타클 7',nameEn:'Seven of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:71,name:'펜타클 8',nameEn:'Eight of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:72,name:'펜타클 9',nameEn:'Nine of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:73,name:'펜타클 10',nameEn:'Ten of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:74,name:'펜타클 페이지',nameEn:'Page of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:75,name:'펜타클 나이트',nameEn:'Knight of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:76,name:'펜타클 퀸',nameEn:'Queen of Pentacles',arcana:'minor',suit:'pentacles'},
+  {id:77,name:'펜타클 킹',nameEn:'King of Pentacles',arcana:'minor',suit:'pentacles'},
+];
+
+// ── IndexedDB ──────────────────────────────
+let db = null;
+async function openDB() {
+  if (db) return db;
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('tarot-images', 1);
+    req.onupgradeneeded = e => e.target.result.createObjectStore('images');
+    req.onsuccess = e => { db = e.target.result; resolve(db); };
+    req.onerror   = e => reject(e);
+  });
+}
+async function saveImage(cardId, dataUrl) {
+  const d = await openDB();
+  return new Promise((res, rej) => {
+    const tx = d.transaction('images','readwrite');
+    tx.objectStore('images').put(dataUrl, cardId);
+    tx.oncomplete = res; tx.onerror = rej;
+  });
+}
+async function getImage(cardId) {
+  const d = await openDB();
+  return new Promise(resolve => {
+    const req = d.transaction('images','readonly').objectStore('images').get(cardId);
+    req.onsuccess = () => resolve(req.result || null);
+    req.onerror   = () => resolve(null);
+  });
+}
+async function deleteImage(cardId) {
+  const d = await openDB();
+  return new Promise(res => {
+    const tx = d.transaction('images','readwrite');
+    tx.objectStore('images').delete(cardId);
+    tx.oncomplete = res;
+  });
+}
+async function getAllImageIds() {
+  const d = await openDB();
+  return new Promise(resolve => {
+    const req = d.transaction('images','readonly').objectStore('images').getAllKeys();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror   = () => resolve([]);
+  });
+}
+
+// ── State ──────────────────────────────────
+let imageStatus = {}; // cardId → true/false
+let currentFilter = 'all';
+let currentCardId = null;
+let modalCardId   = null;
+
+// ── Init ───────────────────────────────────
+async function init() {
+  const ids = await getAllImageIds();
+  ids.forEach(id => { imageStatus[id] = true; });
+  updateStats();
+  renderGrid();
+}
+
+function updateStats() {
+  const total   = 78;
+  const filled  = Object.values(imageStatus).filter(Boolean).length;
+  document.getElementById('stats-badge').textContent = `이미지 ${filled} / ${total}장`;
+}
+
+// ── Grid ───────────────────────────────────
+const GROUPS = [
+  {key:'major',     label:'메이저 아르카나 (22장)', cards: CARDS.filter(c=>c.arcana==='major')},
+  {key:'wands',     label:'완드 (Wands) · 14장',   cards: CARDS.filter(c=>c.suit==='wands')},
+  {key:'cups',      label:'컵 (Cups) · 14장',       cards: CARDS.filter(c=>c.suit==='cups')},
+  {key:'swords',    label:'소드 (Swords) · 14장',   cards: CARDS.filter(c=>c.suit==='swords')},
+  {key:'pentacles', label:'펜타클 · 14장',          cards: CARDS.filter(c=>c.suit==='pentacles')},
+];
+const SYMBOLS = {major:'★', wands:'🔥', cups:'💧', swords:'⚔️', pentacles:'⭐'};
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function renderGrid() {
+  const search  = (document.getElementById('search-input').value || '').toLowerCase();
+  const main    = document.getElementById('main-grid');
+  main.innerHTML = '';
+
+  GROUPS.forEach(g => {
+    if (currentFilter !== 'all' && currentFilter !== g.key && currentFilter !== 'no-image') return;
+
+    let cards = g.cards;
+    if (search) cards = cards.filter(c => c.name.includes(search) || c.nameEn.toLowerCase().includes(search));
+    if (currentFilter === 'no-image') cards = cards.filter(c => !imageStatus[c.id]);
+    if (!cards.length) return;
+
+    if (currentFilter === 'all' || currentFilter === g.key || currentFilter === 'no-image') {
+      const t = document.createElement('div');
+      t.className = 'section-title'; t.textContent = g.label;
+      main.appendChild(t);
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'card-grid';
+
+    cards.forEach(card => {
+      const hasImg = !!imageStatus[card.id];
+      const div    = document.createElement('div');
+      div.className = `card-item${hasImg?' has-image':''}`;
+      const previewCls = card.arcana === 'major' ? '' : card.suit;
+      const sym = card.arcana==='major' ? '★' : (SYMBOLS[card.suit]||'✦');
+      div.innerHTML = `
+        <div class="card-preview ${previewCls}" id="preview-${card.id}">
+          <span class="default-art" id="sym-${card.id}">${sym}</span>
+          ${hasImg ? `<div class="has-image-badge">✓</div>` : ''}
+        </div>
+        <div class="card-info">
+          <div class="name">${card.name}</div>
+          <div class="en">${card.nameEn}</div>
+        </div>
+        <div class="upload-overlay">
+          <span class="upload-icon">📷</span>
+          <span>${hasImg ? '이미지 변경' : '이미지 추가'}</span>
+        </div>
+      `;
+      div.onclick = () => openModal(card.id);
+      grid.appendChild(div);
+
+      // async load image preview in grid
+      if (hasImg) loadGridPreview(card.id);
+    });
+
+    main.appendChild(grid);
+  });
+}
+
+async function loadGridPreview(cardId) {
+  const dataUrl = await getImage(cardId);
+  if (!dataUrl) return;
+  const container = document.getElementById(`preview-${cardId}`);
+  if (!container) return;
+  const sym = document.getElementById(`sym-${cardId}`);
+  if (sym) sym.style.display = 'none';
+  let img = container.querySelector('img');
+  if (!img) { img = document.createElement('img'); container.appendChild(img); }
+  img.src = dataUrl;
+}
+
+// ── Modal ──────────────────────────────────
+async function openModal(cardId) {
+  modalCardId = cardId;
+  const card  = CARDS.find(c=>c.id===cardId);
+
+  document.getElementById('modal-card-name').textContent = card.name;
+  document.getElementById('modal-card-en').textContent   = card.nameEn;
+
+  const preview = document.getElementById('modal-preview');
+  const dataUrl = await getImage(cardId);
+  if (dataUrl) {
+    preview.innerHTML = `<img src="${dataUrl}" alt="${card.name}">`;
+    document.getElementById('modal-remove-btn').style.display = '';
+  } else {
+    preview.innerHTML = `<div class="no-img">✦</div>`;
+    document.getElementById('modal-remove-btn').style.display = 'none';
+  }
+
+  document.getElementById('url-section').classList.remove('open');
+  document.getElementById('url-input').value = '';
+  document.getElementById('card-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('card-modal').classList.remove('open');
+  modalCardId = null;
+}
+
+document.getElementById('card-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function triggerFileInput() {
+  document.getElementById('file-input').click();
+}
+
+async function handleFileSelect(e) {
+  const file = e.target.files[0]; if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('이미지 파일을 선택해 주세요.'); return; }
+  if (file.size > 10 * 1024 * 1024) { toast('파일 크기는 10MB 이하여야 합니다.'); return; }
+
+  const reader = new FileReader();
+  reader.onload = async ev => {
+    await applyImage(ev.target.result);
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function toggleUrlInput() {
+  const s = document.getElementById('url-section');
+  s.classList.toggle('open');
+}
+
+async function applyUrl() {
+  const url = document.getElementById('url-input').value.trim();
+  if (!url) return;
+  // convert URL to base64 via canvas
+  try {
+    const dataUrl = await urlToDataUrl(url);
+    await applyImage(dataUrl);
+  } catch {
+    // store URL directly if cross-origin blocks canvas
+    await applyImage(url);
+  }
+}
+
+async function urlToDataUrl(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image(); img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas  = document.createElement('canvas');
+      canvas.width  = img.width; canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
+async function applyImage(dataUrl) {
+  if (modalCardId === null) return;
+  await saveImage(modalCardId, dataUrl);
+  imageStatus[modalCardId] = true;
+  updateStats();
+
+  // update modal preview
+  document.getElementById('modal-preview').innerHTML = `<img src="${dataUrl}">`;
+  document.getElementById('modal-remove-btn').style.display = '';
+  document.getElementById('url-section').classList.remove('open');
+
+  // update grid
+  const container = document.getElementById(`preview-${modalCardId}`);
+  if (container) {
+    const sym = document.getElementById(`sym-${modalCardId}`);
+    if (sym) sym.style.display = 'none';
+    let img = container.querySelector('img');
+    if (!img) { img = document.createElement('img'); container.appendChild(img); }
+    img.src = dataUrl;
+
+    // add badge
+    if (!container.querySelector('.has-image-badge')) {
+      const badge = document.createElement('div');
+      badge.className = 'has-image-badge'; badge.textContent = '✓';
+      container.appendChild(badge);
+    }
+    container.closest('.card-item').classList.add('has-image');
+  }
+
+  toast('이미지가 저장되었습니다');
+}
+
+async function removeCurrentImage() {
+  if (modalCardId === null) return;
+  if (!confirm('이 카드의 이미지를 삭제할까요?')) return;
+  await deleteImage(modalCardId);
+  delete imageStatus[modalCardId];
+  updateStats();
+
+  document.getElementById('modal-preview').innerHTML = '<div class="no-img">✦</div>';
+  document.getElementById('modal-remove-btn').style.display = 'none';
+
+  // update grid
+  const container = document.getElementById(`preview-${modalCardId}`);
+  if (container) {
+    const img = container.querySelector('img');
+    if (img) img.remove();
+    const sym = document.getElementById(`sym-${modalCardId}`);
+    if (sym) sym.style.display = '';
+    const badge = container.querySelector('.has-image-badge');
+    if (badge) badge.remove();
+    container.closest('.card-item').classList.remove('has-image');
+  }
+
+  toast('이미지가 삭제되었습니다');
+}
+
+async function clearAllImages() {
+  if (!confirm('모든 카드 이미지를 삭제할까요? 되돌릴 수 없습니다.')) return;
+  const d = await openDB();
+  await new Promise(res => {
+    const tx = d.transaction('images','readwrite');
+    tx.objectStore('images').clear();
+    tx.oncomplete = res;
+  });
+  imageStatus = {};
+  updateStats();
+  renderGrid();
+  toast('모든 이미지가 삭제되었습니다');
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+init();
+</script>
+</body>
+</html>
