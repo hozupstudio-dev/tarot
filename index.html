@@ -140,23 +140,24 @@ body {
   z-index: 60;
   pointer-events: none;
   border: 3px solid var(--gold);
-  border-radius: 14px;
-  background: rgba(201,169,110,0.07);
-  box-shadow: 0 0 28px rgba(201,169,110,0.45), inset 0 0 20px rgba(201,169,110,0.06);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  padding-bottom: 6px;
+  border-radius: 9px;
+  background: rgba(201,169,110,0.06);
+  box-shadow: 0 0 24px rgba(201,169,110,0.5), inset 0 0 16px rgba(201,169,110,0.05);
 }
 .zone-label {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 10px;
   font-weight: 700;
   color: var(--gold);
-  background: rgba(255,255,255,0.92);
-  padding: 2px 8px;
+  background: rgba(255,255,255,0.95);
+  padding: 2px 10px;
   border-radius: 8px;
   letter-spacing: 0.3px;
   white-space: nowrap;
+  box-shadow: 0 1px 6px rgba(201,169,110,0.25);
 }
 
 .fan-pivot {
@@ -633,26 +634,24 @@ function updateDrawUI() {
 //  SELECTION ZONE POSITIONING
 // ═══════════════════════════════════════════════════════
 function positionZone() {
-  const fanArea  = document.getElementById('fan-area');
-  const zone     = document.getElementById('selection-zone');
-  const areaH    = fanArea.offsetHeight;
-  const CARD_W   = 72; const CARD_H = 116;
+  const fanArea = document.getElementById('fan-area');
+  const zone    = document.getElementById('selection-zone');
+  const areaH   = fanArea.offsetHeight;
+  const areaW   = fanArea.offsetWidth;
+  const CARD_W  = 72;
+  const CARD_H  = 116;
 
-  // center card bottom is FAN_RADIUS above the pivot
-  // pivot is at areaH + PIVOT_OFFSET from top of fan-area
-  // so card bottom from top of fan-area = (areaH + PIVOT_OFFSET) - FAN_RADIUS
+  // center card: bottom is FAN_RADIUS above the pivot
+  // pivot sits PIVOT_OFFSET below fan-area bottom
+  // → card bottom from fan-area top = areaH + PIVOT_OFFSET - FAN_RADIUS
   const cardBottom = areaH + PIVOT_OFFSET - FAN_RADIUS;
   const cardTop    = cardBottom - CARD_H;
+  const cardLeft   = (areaW - CARD_W) / 2;
 
-  const zoneW = CARD_W + 24;
-  const zoneH = CARD_H + 24;
-  const zoneTop  = Math.max(4, cardTop  - 12);
-  const zoneLeft = (fanArea.offsetWidth - zoneW) / 2;
-
-  zone.style.top    = zoneTop  + 'px';
-  zone.style.left   = zoneLeft + 'px';
-  zone.style.width  = zoneW    + 'px';
-  zone.style.height = zoneH    + 'px';
+  zone.style.top    = Math.max(0, cardTop)  + 'px';
+  zone.style.left   = cardLeft              + 'px';
+  zone.style.width  = CARD_W               + 'px';
+  zone.style.height = CARD_H               + 'px';
 }
 
 // ═══════════════════════════════════════════════════════
