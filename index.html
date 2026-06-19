@@ -94,11 +94,6 @@ body {
 .guide-intro { background: linear-gradient(135deg, #F0E8FF, #FFE8EE); border-radius: 16px; padding: 18px; margin-bottom: 20px; }
 .guide-intro .spread-name { font-size: 13px; font-weight: 600; color: var(--purple); margin-bottom: 6px; }
 .guide-intro .spread-desc { font-size: 14px; color: var(--text-mid); line-height: 1.7; }
-.guide-positions h3 { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
-.position-item { display: flex; gap: 12px; margin-bottom: 12px; padding: 12px 14px; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); }
-.position-num { width: 26px; height: 26px; border-radius: 50%; background: var(--purple); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.position-info strong { display: block; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
-.position-info p { font-size: 12px; color: var(--text-soft); line-height: 1.6; }
 .guide-tip { margin-top: 20px; padding: 14px 16px; background: #FFF8E8; border-radius: 12px; border: 1px solid #F0DCA0; }
 .guide-tip p { font-size: 13px; color: #7A6030; line-height: 1.7; }
 .guide-tip p::before { content: "💡 "; }
@@ -579,14 +574,6 @@ function selectFortune(type) {
     <div class="guide-intro">
       <div class="spread-name">${currentSpread.spreadName}</div>
       <div class="spread-desc">${currentSpread.desc}</div>
-    </div>
-    <div class="guide-positions">
-      <h3>카드 배치 의미</h3>
-      ${currentSpread.positions.map((p,i) => `
-        <div class="position-item">
-          <div class="position-num">${i+1}</div>
-          <div class="position-info"><strong>${p.name}</strong><p>${p.desc}</p></div>
-        </div>`).join('')}
     </div>
     <div class="guide-tip"><p>${currentSpread.tip}</p></div>
   `;
