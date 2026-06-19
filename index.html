@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>타로 연애운</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FBF7F2;
+  --bg2: #F2EBF8;
+  --surface: #FFFFFF;
+  --purple: #8B7BB8;
+  --purple-light: #B8A9DC;
+  --purple-dark: #6A5A98;
+  --rose: #C4908E;
+  --rose-light: #E8C5C3;
+  --gold: #C9A96E;
+  --text: #2E2640;
+  --text-mid: #5E5472;
+  --text-soft: #9188A0;
+  --border: #E8E0F0;
+  --card-w: 52px;
+  --card-h: 84px;
+  --fan-radius: 260px;
+}
+
+body {
+  font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100dvh;
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── SCREENS ────────────────────────────── */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  overflow: hidden;
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── HOME ───────────────────────────────── */
+#screen-home {
+  background: linear-gradient(160deg, #F5EEFF 0%, #FBF7F2 60%);
+  justify-content: center;
+  padding: 32px 24px 48px;
+}
+
+.home-deco {
+  font-size: 64px;
+  line-height: 1;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 4px 12px rgba(139,123,184,0.3));
+}
+
+.home-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--purple-dark);
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.home-sub {
+  font-size: 14px;
+  color: var(--text-soft);
+  margin-bottom: 40px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.fortune-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.fortune-btn {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 12px rgba(139,123,184,0.08);
+  text-align: left;
+}
+.fortune-btn:active {
+  transform: scale(0.97);
+  box-shadow: 0 1px 6px rgba(139,123,184,0.12);
+}
+.fortune-btn .icon {
+  font-size: 32px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.fortune-btn .label { flex: 1; }
+.fortune-btn .label strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--purple-dark);
+  margin-bottom: 2px;
+}
+.fortune-btn .label span {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+.fortune-btn .arrow {
+  font-size: 18px;
+  color: var(--purple-light);
+}
+
+.fortune-btn[data-type="solo"] { border-color: #DCB8E8; }
+.fortune-btn[data-type="couple"] { border-color: #E8B8C4; }
+.fortune-btn[data-type="reunion"] { border-color: #B8D4E8; }
+
+/* ── GUIDE ──────────────────────────────── */
+#screen-guide {
+  background: var(--bg);
+}
+
+.screen-header {
+  width: 100%;
+  padding: 16px 20px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.back-btn {
+  width: 36px; height: 36px;
+  border: none; background: none;
+  font-size: 22px; cursor: pointer;
+  color: var(--text-mid);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+}
+.back-btn:active { background: var(--border); }
+.screen-header h2 {
+  font-size: 17px; font-weight: 700; color: var(--text);
+}
+
+.guide-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 20px 24px;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.guide-intro {
+  background: linear-gradient(135deg, #F0E8FF, #FFE8EE);
+  border-radius: 16px;
+  padding: 18px 18px;
+  margin-bottom: 20px;
+}
+.guide-intro .spread-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+.guide-intro .spread-desc {
+  font-size: 14px;
+  color: var(--text-mid);
+  line-height: 1.7;
+}
+
+.guide-positions h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.position-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.position-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--purple);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.position-info strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+}
+.position-info p {
+  font-size: 12px;
+  color: var(--text-soft);
+  line-height: 1.6;
+}
+
+.guide-tip {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #FFF8E8;
+  border-radius: 12px;
+  border: 1px solid #F0DCA0;
+}
+.guide-tip p {
+  font-size: 13px;
+  color: #7A6030;
+  line-height: 1.7;
+}
+.guide-tip p::before { content: "💡 "; }
+
+.guide-start-btn {
+  width: calc(100% - 40px);
+  margin: 0 20px 32px;
+  padding: 17px;
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 16px rgba(106,90,152,0.35);
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.guide-start-btn:active { transform: scale(0.97); }
+
+/* ── DRAW SCREEN ────────────────────────── */
+#screen-draw {
+  background: linear-gradient(180deg, #F5EEFF 0%, #FBF7F2 100%);
+}
+
+.draw-header {
+  width: 100%;
+  padding: 14px 20px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+}
+
+.draw-info {
+  width: 100%;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.draw-position-label {
+  font-size: 13px;
+  color: var(--purple);
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: 0.3px;
+}
+
+.draw-position-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.draw-hint {
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+/* drawn card slots */
+.drawn-slots {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px;
+  justify-content: center;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.slot {
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: 8px;
+  border: 2px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.5);
+  position: relative;
+  transition: border-color 0.3s;
+}
+.slot.filled {
+  border-style: solid;
+  border-color: var(--purple-light);
+}
+.slot .slot-num {
+  font-size: 10px;
+  color: var(--text-soft);
+  position: absolute;
+  bottom: 3px;
+}
+.slot .mini-card {
+  width: 100%; height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.slot.active {
+  border-color: var(--gold);
+  border-style: solid;
+  box-shadow: 0 0 0 3px rgba(201,169,110,0.25);
+}
+
+/* FAN AREA */
+.fan-area {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.fan-pivot {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+}
+
+.fan-card {
+  position: absolute;
+  width: var(--card-w);
+  height: var(--card-h);
+  left: calc(var(--card-w) / -2);
+  bottom: 0;
+  transform-origin: center bottom;
+  cursor: pointer;
+  transition: transform 0.08s linear, filter 0.15s;
+  border-radius: 7px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  background: var(--card-back, #8B7BB8);
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fan-card .card-inner {
+  width: 100%; height: 100%;
+  border-radius: 7px;
+  background: linear-gradient(145deg, #9B8FD4 0%, #7060A8 50%, #8B4E8C 100%);
+  border: 2.5px solid rgba(255,255,255,0.35);
+  position: relative;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.fan-card .card-inner::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+}
+.fan-card .card-inner::after {
+  content: '✦';
+  font-size: 18px;
+  color: rgba(255,255,255,0.35);
+}
+
+.fan-card.selected { opacity: 0; pointer-events: none; }
+.fan-card.highlighted .card-inner {
+  border-color: rgba(255,220,100,0.9);
+  box-shadow: 0 0 12px rgba(255,200,60,0.6);
+}
+
+.fan-drag-hint {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--text-soft);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tap-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+/* ── RESULT SCREEN ──────────────────────── */
+#screen-result {
+  background: var(--bg);
+}
+
+.result-body {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  padding: 16px 16px 32px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.result-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.result-sub {
+  font-size: 13px;
+  color: var(--text-soft);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.result-card {
+  background: var(--surface);
+  border-radius: 18px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  border: 1px solid var(--border);
+}
+
+.result-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, #F8F4FF, #FFF4F6);
+}
+
+.result-position-badge {
+  background: var(--purple);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.result-card-name-wrap { flex: 1; }
+.result-card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.result-card-sub {
+  font-size: 11px;
+  color: var(--text-soft);
+  margin-top: 1px;
+}
+
+.reversed-badge {
+  font-size: 11px;
+  color: var(--rose);
+  font-weight: 600;
+  background: #FFE8E6;
+  padding: 2px 8px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.result-card-art {
+  width: 72px; height: 112px;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #9B8FD4, #7060A8, #8B4E8C);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  color: rgba(255,255,255,0.5);
+  flex-shrink: 0;
+  margin: 0 0 0 4px;
+  border: 2px solid rgba(255,255,255,0.3);
+  position: relative;
+  overflow: hidden;
+}
+.result-card-art::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+}
+
+.result-card-body {
+  padding: 14px 16px;
+  display: flex;
+  gap: 14px;
+}
+.result-card-text { flex: 1; }
+.result-position-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 6px;
+}
+.result-interp {
+  font-size: 13.5px;
+  color: var(--text-mid);
+  line-height: 1.75;
+}
+
+.result-actions {
+  padding: 0 16px 16px;
+  display: flex;
+  gap: 10px;
+}
+.result-again-btn, .result-home-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.result-again-btn {
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(106,90,152,0.3);
+}
+.result-home-btn {
+  background: var(--surface);
+  color: var(--text-mid);
+  border: 1.5px solid var(--border);
+}
+.result-again-btn:active, .result-home-btn:active { transform: scale(0.97); }
+
+/* ── FLIP ANIMATION (card fly-up) ────────── */
+@keyframes cardFlyUp {
+  0%   { transform: var(--from-transform) scale(1.2); opacity: 1; }
+  100% { transform: translateY(-120px) scale(0.7) rotate(0deg); opacity: 0; }
+}
+
+/* ── PROGRESS BAR ─────────────────────── */
+.draw-progress {
+  display: flex;
+  gap: 5px;
+  padding: 0 20px 10px;
+  justify-content: center;
+}
+.progress-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 0.3s;
+}
+.progress-dot.done { background: var(--purple); }
+.progress-dot.current { background: var(--gold); }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  SCREEN 1 — HOME                        -->
+<!-- ═══════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <div class="home-deco">🔮</div>
+  <div class="home-title">타로 연애운</div>
+  <div class="home-sub">카드가 전하는 사랑의 이야기<br>어떤 운을 살펴볼까요?</div>
+
+  <div class="fortune-cards">
+    <button class="fortune-btn" data-type="solo" onclick="selectFortune('solo')">
+      <span class="icon">🌸</span>
+      <span class="label">
+        <strong>솔로운</strong>
+        <span>나에게 찾아올 인연과 연애 에너지</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
+    <button class="fortune-btn" data-type="couple" onclick="selectFortune('couple')">
+      <span class="icon">💑</span>
+      <span class="label">
+        <strong>커플운</strong>
+        <span>지금 연인과의 관계와 앞으로의 흐름</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
+    <button class="fortune-btn" data-type="reunion" onclick="selectFortune('reunion')">
+      <span class="icon">🌙</span>
+      <span class="label">
+        <strong>재회운</strong>
+        <span>헤어진 연인과의 재회 가능성</span>
+      </span>
+      <span class="arrow">›</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  SCREEN 2 — GUIDE                       -->
+<!-- ═══════════════════════════════════════ -->
+<div id="screen-guide" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goHome()">‹</button>
+    <h2 id="guide-title">스프레드 가이드</h2>
+  </div>
+
+  <div class="guide-body" id="guide-body">
+    <!-- dynamically filled -->
+  </div>
+
+  <button class="guide-start-btn" onclick="startDraw()">카드 뽑기 시작</button>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  SCREEN 3 — DRAW                        -->
+<!-- ═══════════════════════════════════════ -->
+<div id="screen-draw" class="screen">
+  <div class="draw-header">
+    <button class="back-btn" onclick="goGuide()">‹</button>
+    <div style="flex:1"></div>
+    <span id="draw-counter" style="font-size:13px;color:var(--text-soft)"></span>
+  </div>
+
+  <div class="draw-info">
+    <div class="draw-position-label" id="draw-pos-label"></div>
+    <div class="draw-position-name" id="draw-pos-name"></div>
+    <div class="draw-hint">마음이 끌리는 카드를 터치하세요</div>
+  </div>
+
+  <div class="draw-progress" id="draw-progress"></div>
+
+  <div class="drawn-slots" id="drawn-slots"></div>
+
+  <div class="fan-area" id="fan-area">
+    <div class="fan-pivot" id="fan-pivot"></div>
+    <div class="fan-drag-hint">← 스와이프하여 카드 탐색 →</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--  SCREEN 4 — RESULT                      -->
+<!-- ═══════════════════════════════════════ -->
+<div id="screen-result" class="screen">
+  <div class="screen-header">
+    <button class="back-btn" onclick="goHome()">✕</button>
+    <h2 id="result-type-title">연애운 결과</h2>
+  </div>
+
+  <div class="result-body" id="result-body">
+    <!-- dynamically filled -->
+  </div>
+
+  <div class="result-actions">
+    <button class="result-again-btn" onclick="restartSameFortune()">다시 뽑기</button>
+    <button class="result-home-btn" onclick="goHome()">처음으로</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  CARD DATA
+// ═══════════════════════════════════════════════════════
+const CARDS = [
+  // Major Arcana
+  { id:0,  name:'바보',            nameEn:'The Fool',             arcana:'major', suit:null },
+  { id:1,  name:'마법사',          nameEn:'The Magician',         arcana:'major', suit:null },
+  { id:2,  name:'여사제',          nameEn:'The High Priestess',   arcana:'major', suit:null },
+  { id:3,  name:'여황제',          nameEn:'The Empress',          arcana:'major', suit:null },
+  { id:4,  name:'황제',            nameEn:'The Emperor',          arcana:'major', suit:null },
+  { id:5,  name:'교황',            nameEn:'The Hierophant',       arcana:'major', suit:null },
+  { id:6,  name:'연인',            nameEn:'The Lovers',           arcana:'major', suit:null },
+  { id:7,  name:'전차',            nameEn:'The Chariot',          arcana:'major', suit:null },
+  { id:8,  name:'힘',              nameEn:'Strength',             arcana:'major', suit:null },
+  { id:9,  name:'은둔자',          nameEn:'The Hermit',           arcana:'major', suit:null },
+  { id:10, name:'운명의 수레바퀴', nameEn:'Wheel of Fortune',     arcana:'major', suit:null },
+  { id:11, name:'정의',            nameEn:'Justice',              arcana:'major', suit:null },
+  { id:12, name:'매달린 사람',     nameEn:'The Hanged Man',       arcana:'major', suit:null },
+  { id:13, name:'죽음',            nameEn:'Death',                arcana:'major', suit:null },
+  { id:14, name:'절제',            nameEn:'Temperance',           arcana:'major', suit:null },
+  { id:15, name:'악마',            nameEn:'The Devil',            arcana:'major', suit:null },
+  { id:16, name:'탑',              nameEn:'The Tower',            arcana:'major', suit:null },
+  { id:17, name:'별',              nameEn:'The Star',             arcana:'major', suit:null },
+  { id:18, name:'달',              nameEn:'The Moon',             arcana:'major', suit:null },
+  { id:19, name:'태양',            nameEn:'The Sun',              arcana:'major', suit:null },
+  { id:20, name:'심판',            nameEn:'Judgement',            arcana:'major', suit:null },
+  { id:21, name:'세계',            nameEn:'The World',            arcana:'major', suit:null },
+  // Wands
+  { id:22, name:'완드 에이스', nameEn:'Ace of Wands',    arcana:'minor', suit:'wands' },
+  { id:23, name:'완드 2',     nameEn:'Two of Wands',    arcana:'minor', suit:'wands' },
+  { id:24, name:'완드 3',     nameEn:'Three of Wands',  arcana:'minor', suit:'wands' },
+  { id:25, name:'완드 4',     nameEn:'Four of Wands',   arcana:'minor', suit:'wands' },
+  { id:26, name:'완드 5',     nameEn:'Five of Wands',   arcana:'minor', suit:'wands' },
+  { id:27, name:'완드 6',     nameEn:'Six of Wands',    arcana:'minor', suit:'wands' },
+  { id:28, name:'완드 7',     nameEn:'Seven of Wands',  arcana:'minor', suit:'wands' },
+  { id:29, name:'완드 8',     nameEn:'Eight of Wands',  arcana:'minor', suit:'wands' },
+  { id:30, name:'완드 9',     nameEn:'Nine of Wands',   arcana:'minor', suit:'wands' },
+  { id:31, name:'완드 10',    nameEn:'Ten of Wands',    arcana:'minor', suit:'wands' },
+  { id:32, name:'완드 페이지',nameEn:'Page of Wands',   arcana:'minor', suit:'wands' },
+  { id:33, name:'완드 나이트',nameEn:'Knight of Wands', arcana:'minor', suit:'wands' },
+  { id:34, name:'완드 퀸',    nameEn:'Queen of Wands',  arcana:'minor', suit:'wands' },
+  { id:35, name:'완드 킹',    nameEn:'King of Wands',   arcana:'minor', suit:'wands' },
+  // Cups
+  { id:36, name:'컵 에이스',  nameEn:'Ace of Cups',     arcana:'minor', suit:'cups' },
+  { id:37, name:'컵 2',      nameEn:'Two of Cups',     arcana:'minor', suit:'cups' },
+  { id:38, name:'컵 3',      nameEn:'Three of Cups',   arcana:'minor', suit:'cups' },
+  { id:39, name:'컵 4',      nameEn:'Four of Cups',    arcana:'minor', suit:'cups' },
+  { id:40, name:'컵 5',      nameEn:'Five of Cups',    arcana:'minor', suit:'cups' },
+  { id:41, name:'컵 6',      nameEn:'Six of Cups',     arcana:'minor', suit:'cups' },
+  { id:42, name:'컵 7',      nameEn:'Seven of Cups',   arcana:'minor', suit:'cups' },
+  { id:43, name:'컵 8',      nameEn:'Eight of Cups',   arcana:'minor', suit:'cups' },
+  { id:44, name:'컵 9',      nameEn:'Nine of Cups',    arcana:'minor', suit:'cups' },
+  { id:45, name:'컵 10',     nameEn:'Ten of Cups',     arcana:'minor', suit:'cups' },
+  { id:46, name:'컵 페이지', nameEn:'Page of Cups',    arcana:'minor', suit:'cups' },
+  { id:47, name:'컵 나이트', nameEn:'Knight of Cups',  arcana:'minor', suit:'cups' },
+  { id:48, name:'컵 퀸',     nameEn:'Queen of Cups',   arcana:'minor', suit:'cups' },
+  { id:49, name:'컵 킹',     nameEn:'King of Cups',    arcana:'minor', suit:'cups' },
+  // Swords
+  { id:50, name:'소드 에이스', nameEn:'Ace of Swords',    arcana:'minor', suit:'swords' },
+  { id:51, name:'소드 2',     nameEn:'Two of Swords',    arcana:'minor', suit:'swords' },
+  { id:52, name:'소드 3',     nameEn:'Three of Swords',  arcana:'minor', suit:'swords' },
+  { id:53, name:'소드 4',     nameEn:'Four of Swords',   arcana:'minor', suit:'swords' },
+  { id:54, name:'소드 5',     nameEn:'Five of Swords',   arcana:'minor', suit:'swords' },
+  { id:55, name:'소드 6',     nameEn:'Six of Swords',    arcana:'minor', suit:'swords' },
+  { id:56, name:'소드 7',     nameEn:'Seven of Swords',  arcana:'minor', suit:'swords' },
+  { id:57, name:'소드 8',     nameEn:'Eight of Swords',  arcana:'minor', suit:'swords' },
+  { id:58, name:'소드 9',     nameEn:'Nine of Swords',   arcana:'minor', suit:'swords' },
+  { id:59, name:'소드 10',    nameEn:'Ten of Swords',    arcana:'minor', suit:'swords' },
+  { id:60, name:'소드 페이지',nameEn:'Page of Swords',   arcana:'minor', suit:'swords' },
+  { id:61, name:'소드 나이트',nameEn:'Knight of Swords', arcana:'minor', suit:'swords' },
+  { id:62, name:'소드 퀸',    nameEn:'Queen of Swords',  arcana:'minor', suit:'swords' },
+  { id:63, name:'소드 킹',    nameEn:'King of Swords',   arcana:'minor', suit:'swords' },
+  // Pentacles
+  { id:64, name:'펜타클 에이스', nameEn:'Ace of Pentacles',    arcana:'minor', suit:'pentacles' },
+  { id:65, name:'펜타클 2',     nameEn:'Two of Pentacles',    arcana:'minor', suit:'pentacles' },
+  { id:66, name:'펜타클 3',     nameEn:'Three of Pentacles',  arcana:'minor', suit:'pentacles' },
+  { id:67, name:'펜타클 4',     nameEn:'Four of Pentacles',   arcana:'minor', suit:'pentacles' },
+  { id:68, name:'펜타클 5',     nameEn:'Five of Pentacles',   arcana:'minor', suit:'pentacles' },
+  { id:69, name:'펜타클 6',     nameEn:'Six of Pentacles',    arcana:'minor', suit:'pentacles' },
+  { id:70, name:'펜타클 7',     nameEn:'Seven of Pentacles',  arcana:'minor', suit:'pentacles' },
+  { id:71, name:'펜타클 8',     nameEn:'Eight of Pentacles',  arcana:'minor', suit:'pentacles' },
+  { id:72, name:'펜타클 9',     nameEn:'Nine of Pentacles',   arcana:'minor', suit:'pentacles' },
+  { id:73, name:'펜타클 10',    nameEn:'Ten of Pentacles',    arcana:'minor', suit:'pentacles' },
+  { id:74, name:'펜타클 페이지',nameEn:'Page of Pentacles',   arcana:'minor', suit:'pentacles' },
+  { id:75, name:'펜타클 나이트',nameEn:'Knight of Pentacles', arcana:'minor', suit:'pentacles' },
+  { id:76, name:'펜타클 퀸',    nameEn:'Queen of Pentacles',  arcana:'minor', suit:'pentacles' },
+  { id:77, name:'펜타클 킹',    nameEn:'King of Pentacles',   arcana:'minor', suit:'pentacles' },
+];
+
+// ═══════════════════════════════════════════════════════
+//  SPREADS CONFIG
+// ═══════════════════════════════════════════════════════
+const SPREADS = {
+  solo: {
+    label: '솔로운',
+    emoji: '🌸',
+    spreadName: '3카드 스프레드 (과거-현재-미래)',
+    desc: '현재 나의 연애 에너지와 앞으로 다가올 인연을 살펴보는 스프레드입니다. 과거의 연애 패턴이 지금에 어떤 영향을 미치는지, 앞으로 어떤 만남이 기다리는지 카드가 이야기해 줍니다.',
+    tip: '카드를 뽑기 전, 잠시 눈을 감고 "나에게 어떤 사랑이 찾아올까?"라고 마음속으로 물어보세요. 직관적으로 끌리는 카드를 선택하는 것이 중요합니다.',
+    positions: [
+      { label: '카드 1', name: '과거의 연애 에너지', desc: '과거 연애 경험에서 가져온 패턴이나 상처, 혹은 긍정적인 자산을 나타냅니다.' },
+      { label: '카드 2', name: '현재의 나',           desc: '현재 내 연애 에너지와 감정 상태, 준비도를 보여줍니다.' },
+      { label: '카드 3', name: '다가올 인연',         desc: '가까운 미래에 찾아올 인연의 성격이나 만남의 방식을 암시합니다.' },
+    ],
+  },
+  couple: {
+    label: '커플운',
+    emoji: '💑',
+    spreadName: '5카드 관계 스프레드',
+    desc: '연인과의 현재 관계 에너지와 두 사람의 미래를 살펴보는 스프레드입니다. 각자의 마음과 관계의 흐름, 함께 극복해야 할 과제를 통해 더 깊은 이해를 얻을 수 있습니다.',
+    tip: '파트너를 생각하면서 카드를 뽑으세요. 두 사람의 에너지가 함께 반영될 수 있도록 집중하는 것이 좋습니다.',
+    positions: [
+      { label: '카드 1', name: '나의 마음',     desc: '지금 이 관계에서 내가 품고 있는 감정과 진심을 나타냅니다.' },
+      { label: '카드 2', name: '상대방의 마음', desc: '파트너가 이 관계에 가지고 있는 감정과 관점을 보여줍니다.' },
+      { label: '카드 3', name: '관계의 현재',   desc: '두 사람 사이의 현재 역동과 관계의 전반적인 에너지를 나타냅니다.' },
+      { label: '카드 4', name: '극복할 과제',   desc: '두 사람이 더 나아지기 위해 함께 마주해야 할 과제나 장애물입니다.' },
+      { label: '카드 5', name: '관계의 미래',   desc: '현재 에너지가 이어진다면 두 사람의 관계가 향할 방향을 보여줍니다.' },
+    ],
+  },
+  reunion: {
+    label: '재회운',
+    emoji: '🌙',
+    spreadName: '5카드 재회 스프레드',
+    desc: '헤어진 연인과의 재회 가능성과 두 사람 사이에 남아있는 에너지를 살펴보는 스프레드입니다. 현재 두 사람의 감정 상태와 재회를 위한 핵심 조언을 담고 있습니다.',
+    tip: '전 연인을 생각하며 카드를 뽑되, 결과에 집착하기보다 현재 자신에게 필요한 메시지를 열린 마음으로 받아들이세요.',
+    positions: [
+      { label: '카드 1', name: '현재 나의 감정',   desc: '전 연인에 대해 지금 내가 느끼는 감정과 내면의 상태를 보여줍니다.' },
+      { label: '카드 2', name: '상대방의 감정',     desc: '상대방이 현재 나에 대해 품고 있는 감정과 생각을 나타냅니다.' },
+      { label: '카드 3', name: '재회의 장애물',     desc: '두 사람의 재회를 막고 있거나 어렵게 하는 요소를 보여줍니다.' },
+      { label: '카드 4', name: '재회를 위한 조언',  desc: '재회의 가능성을 높이기 위해 내가 취해야 할 행동이나 태도입니다.' },
+      { label: '카드 5', name: '재회 가능성',       desc: '현재 두 사람의 에너지를 바탕으로 한 재회 가능성과 방향성입니다.' },
+    ],
+  },
+};
+
+// ═══════════════════════════════════════════════════════
+//  APP STATE
+// ═══════════════════════════════════════════════════════
+let currentFortune = null;
+let currentSpread  = null;
+let drawnCards     = [];      // { card, reversed, positionIndex }
+let currentPosIdx  = 0;
+let deck           = [];      // shuffled indices
+
+// Fan state
+let fanOffset      = 0;       // current rotation offset in degrees
+let touchStartX    = 0;
+let touchStartOff  = 0;
+let isDragging     = false;
+let velocity       = 0;
+let lastTouchX     = 0;
+let lastTouchTime  = 0;
+let animFrameId    = null;
+let fanCardEls     = [];
+
+const FAN_RADIUS    = 260;
+const CARD_STEP_DEG = 180 / 77; // ~2.34° between cards
+const FAN_HALF      = 90;        // fan spans -90° to +90° around center
+
+// ═══════════════════════════════════════════════════════
+//  SCREEN MANAGEMENT
+// ═══════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  cancelAnimationFrame(animFrameId);
+  showScreen('screen-home');
+}
+
+function goGuide() {
+  cancelAnimationFrame(animFrameId);
+  showScreen('screen-guide');
+}
+
+// ═══════════════════════════════════════════════════════
+//  HOME → GUIDE
+// ═══════════════════════════════════════════════════════
+function selectFortune(type) {
+  currentFortune = type;
+  currentSpread  = SPREADS[type];
+
+  const titleEl = document.getElementById('guide-title');
+  titleEl.textContent = currentSpread.label + ' 가이드';
+
+  const body = document.getElementById('guide-body');
+  body.innerHTML = `
+    <div class="guide-intro">
+      <div class="spread-name">${currentSpread.spreadName}</div>
+      <div class="spread-desc">${currentSpread.desc}</div>
+    </div>
+    <div class="guide-positions">
+      <h3>카드 배치 의미</h3>
+      ${currentSpread.positions.map((p, i) => `
+        <div class="position-item">
+          <div class="position-num">${i + 1}</div>
+          <div class="position-info">
+            <strong>${p.name}</strong>
+            <p>${p.desc}</p>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="guide-tip">
+      <p>${currentSpread.tip}</p>
+    </div>
+  `;
+
+  showScreen('screen-guide');
+}
+
+// ═══════════════════════════════════════════════════════
+//  GUIDE → DRAW
+// ═══════════════════════════════════════════════════════
+function startDraw() {
+  drawnCards    = [];
+  currentPosIdx = 0;
+  deck          = shuffleDeck();
+  fanOffset     = 0;
+  velocity      = 0;
+
+  buildDrawUI();
+  buildFan();
+  updateDrawUI();
+  showScreen('screen-draw');
+}
+
+function shuffleDeck() {
+  const arr = Array.from({ length: 78 }, (_, i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildDrawUI() {
+  const positions = currentSpread.positions;
+
+  // progress dots
+  const prog = document.getElementById('draw-progress');
+  prog.innerHTML = positions.map((_, i) =>
+    `<div class="progress-dot" id="dot-${i}"></div>`
+  ).join('');
+
+  // slots
+  const slots = document.getElementById('drawn-slots');
+  slots.innerHTML = positions.map((p, i) =>
+    `<div class="slot" id="slot-${i}"><span class="slot-num">${i+1}</span></div>`
+  ).join('');
+}
+
+function updateDrawUI() {
+  const positions = currentSpread.positions;
+  const pos = positions[currentPosIdx];
+
+  document.getElementById('draw-pos-label').textContent =
+    `${currentPosIdx + 1} / ${positions.length}번째 카드`;
+  document.getElementById('draw-pos-name').textContent = pos.name;
+  document.getElementById('draw-counter').textContent =
+    `${currentPosIdx + 1}/${positions.length}`;
+
+  // progress dots
+  positions.forEach((_, i) => {
+    const dot = document.getElementById(`dot-${i}`);
+    dot.className = 'progress-dot';
+    if (i < currentPosIdx) dot.classList.add('done');
+    else if (i === currentPosIdx) dot.classList.add('current');
+  });
+
+  // slot highlights
+  positions.forEach((_, i) => {
+    const slot = document.getElementById(`slot-${i}`);
+    slot.classList.remove('active');
+    if (i === currentPosIdx) slot.classList.add('active');
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  FAN MECHANICS
+// ═══════════════════════════════════════════════════════
+function buildFan() {
+  const pivot = document.getElementById('fan-pivot');
+  pivot.innerHTML = '';
+  fanCardEls = [];
+
+  for (let i = 0; i < 78; i++) {
+    const el = document.createElement('div');
+    el.className = 'fan-card';
+    el.innerHTML = '<div class="card-inner"></div>';
+    el.dataset.index = i;
+    pivot.appendChild(el);
+    fanCardEls.push(el);
+  }
+
+  renderFan();
+  bindFanEvents();
+}
+
+function getCardAngle(i) {
+  // i=0 at leftmost (-90°), i=77 at rightmost (+90°)
+  return -FAN_HALF + i * CARD_STEP_DEG + fanOffset;
+}
+
+function renderFan() {
+  const drawnIndices = new Set(drawnCards.map(d => d.deckIndex));
+
+  fanCardEls.forEach((el, i) => {
+    const angle = getCardAngle(i);
+    const absAngle = Math.abs(angle);
+
+    if (absAngle > FAN_HALF + 5) {
+      el.style.display = 'none';
+      return;
+    }
+    el.style.display = '';
+
+    // z-index: center cards on top
+    el.style.zIndex = Math.round(100 - absAngle);
+
+    // opacity: fade towards edges
+    const opacity = drawnIndices.has(i) ? 0 :
+      absAngle > 70 ? Math.max(0, 1 - (absAngle - 70) / 25) : 1;
+    el.style.opacity = opacity;
+
+    // transform
+    el.style.transform = `rotate(${angle}deg) translateY(-${FAN_RADIUS}px)`;
+
+    // highlight center card
+    const isCenter = absAngle < CARD_STEP_DEG * 0.6;
+    el.classList.toggle('highlighted', isCenter);
+
+    el.style.pointerEvents = (opacity < 0.1 || drawnIndices.has(i)) ? 'none' : 'auto';
+  });
+}
+
+function bindFanEvents() {
+  const area = document.getElementById('fan-area');
+
+  area.addEventListener('touchstart', onTouchStart, { passive: true });
+  area.addEventListener('touchmove',  onTouchMove,  { passive: true });
+  area.addEventListener('touchend',   onTouchEnd,   { passive: true });
+
+  // desktop fallback
+  area.addEventListener('mousedown',  onMouseDown);
+}
+
+let mouseDown = false;
+
+function onTouchStart(e) {
+  const t = e.touches[0];
+  touchStartX   = t.clientX;
+  touchStartOff = fanOffset;
+  isDragging    = false;
+  velocity      = 0;
+  lastTouchX    = t.clientX;
+  lastTouchTime = Date.now();
+  cancelAnimationFrame(animFrameId);
+}
+
+function onTouchMove(e) {
+  const t = e.touches[0];
+  const dx = t.clientX - touchStartX;
+  if (Math.abs(dx) > 4) isDragging = true;
+
+  if (isDragging) {
+    // 1° per 6px of drag
+    fanOffset = clampOffset(touchStartOff + dx / 6);
+    renderFan();
+
+    const now = Date.now();
+    const dt  = now - lastTouchTime;
+    if (dt > 0) velocity = (t.clientX - lastTouchX) / dt;
+    lastTouchX   = t.clientX;
+    lastTouchTime = now;
+  }
+}
+
+function onTouchEnd(e) {
+  if (!isDragging) {
+    // was a tap — handled by click on the card element
+    handleTap(e.changedTouches[0]);
+    return;
+  }
+  isDragging = false;
+  startMomentum();
+}
+
+function onMouseDown(e) {
+  mouseDown = true;
+  touchStartX   = e.clientX;
+  touchStartOff = fanOffset;
+  velocity      = 0;
+  lastTouchX    = e.clientX;
+  lastTouchTime = Date.now();
+  cancelAnimationFrame(animFrameId);
+
+  const onMove = (ev) => {
+    if (!mouseDown) return;
+    const dx = ev.clientX - touchStartX;
+    isDragging = Math.abs(dx) > 4;
+    if (isDragging) {
+      fanOffset = clampOffset(touchStartOff + dx / 6);
+      renderFan();
+      const now = Date.now();
+      const dt  = now - lastTouchTime;
+      if (dt > 0) velocity = (ev.clientX - lastTouchX) / dt;
+      lastTouchX   = ev.clientX;
+      lastTouchTime = now;
+    }
+  };
+
+  const onUp = (ev) => {
+    if (!isDragging) handleTap(ev);
+    else startMomentum();
+    mouseDown  = false;
+    isDragging = false;
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup',   onUp);
+  };
+
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup',   onUp);
+}
+
+function handleTap(e) {
+  // find which card was tapped
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  const card = el && el.closest('.fan-card');
+  if (card) selectCard(parseInt(card.dataset.index));
+}
+
+function clampOffset(val) {
+  // allow slightly past ends
+  return Math.max(-FAN_HALF - 5, Math.min(FAN_HALF + 5, val));
+}
+
+function startMomentum() {
+  // velocity in degrees per ms
+  let velDeg = velocity / 6;
+
+  function tick() {
+    velDeg *= 0.93;
+    if (Math.abs(velDeg) < 0.01) {
+      snapToNearest();
+      return;
+    }
+    fanOffset = clampOffset(fanOffset + velDeg * 16);
+    renderFan();
+    animFrameId = requestAnimationFrame(tick);
+  }
+  animFrameId = requestAnimationFrame(tick);
+}
+
+function snapToNearest() {
+  // snap so that a card aligns to center (angle = 0)
+  const centerCardFloat = (fanOffset + FAN_HALF) / CARD_STEP_DEG;
+  const nearest = Math.round(centerCardFloat);
+  const targetOffset = nearest * CARD_STEP_DEG - FAN_HALF;
+
+  // animate snap
+  const diff = targetOffset - fanOffset;
+  let progress = 0;
+  function snap() {
+    progress += 0.15;
+    if (progress >= 1) {
+      fanOffset = targetOffset;
+      renderFan();
+      return;
+    }
+    fanOffset += diff * 0.15;
+    renderFan();
+    animFrameId = requestAnimationFrame(snap);
+  }
+  animFrameId = requestAnimationFrame(snap);
+}
+
+// ═══════════════════════════════════════════════════════
+//  CARD SELECTION
+// ═══════════════════════════════════════════════════════
+function selectCard(fanIndex) {
+  if (currentPosIdx >= currentSpread.positions.length) return;
+  const drawnIndices = new Set(drawnCards.map(d => d.deckIndex));
+  if (drawnIndices.has(fanIndex)) return;
+
+  // pick a random card from the actual deck for this position
+  const cardId   = deck[drawnCards.length];
+  const reversed = Math.random() < 0.3; // 30% chance reversed
+
+  drawnCards.push({
+    deckIndex:    fanIndex,
+    card:         CARDS[cardId],
+    reversed:     reversed,
+    positionIndex: currentPosIdx,
+  });
+
+  // mark fan card as selected
+  const fanEl = fanCardEls[fanIndex];
+  fanEl.classList.add('selected');
+
+  // fill slot
+  const slot = document.getElementById(`slot-${currentPosIdx}`);
+  slot.classList.add('filled');
+  slot.innerHTML = `<div class="mini-card">✦</div>`;
+
+  currentPosIdx++;
+
+  if (currentPosIdx >= currentSpread.positions.length) {
+    // All cards drawn
+    setTimeout(() => showResult(), 600);
+  } else {
+    updateDrawUI();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESULT SCREEN
+// ═══════════════════════════════════════════════════════
+function showResult() {
+  cancelAnimationFrame(animFrameId);
+
+  const typeLabel = document.getElementById('result-type-title');
+  typeLabel.textContent = currentSpread.label + ' 결과';
+
+  const body = document.getElementById('result-body');
+  const positions = currentSpread.positions;
+
+  body.innerHTML = `
+    <div class="result-title">${currentSpread.emoji} ${currentSpread.label}</div>
+    <div class="result-sub">카드가 전하는 이야기를 들어보세요</div>
+    ${drawnCards.map((drawn, idx) => {
+      const pos  = positions[drawn.positionIndex];
+      const card = drawn.card;
+      const rev  = drawn.reversed;
+      const interp = getInterpretation(card.id, currentFortune, rev);
+      return `
+        <div class="result-card">
+          <div class="result-card-header">
+            <div class="result-position-badge">${pos.label}</div>
+            <div class="result-card-name-wrap">
+              <div class="result-card-name">${card.name}</div>
+              <div class="result-card-sub">${card.nameEn}</div>
+            </div>
+            ${rev ? '<div class="reversed-badge">역방향</div>' : ''}
+          </div>
+          <div class="result-card-body">
+            <div class="result-card-art" style="${getCardArtStyle(card)}">
+              <span style="font-size:22px;">${getCardSymbol(card)}</span>
+            </div>
+            <div class="result-card-text">
+              <div class="result-position-label">${pos.name}</div>
+              <div class="result-interp">${interp}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('')}
+  `;
+
+  showScreen('screen-result');
+}
+
+function getInterpretation(cardId, fortuneType, reversed) {
+  const saved = JSON.parse(localStorage.getItem('tarot-interp') || '{}');
+  const key = `${cardId}_${fortuneType}_${reversed ? 'rev' : 'norm'}`;
+  if (saved[key] && saved[key].trim()) return saved[key];
+
+  // Default placeholder
+  const dirStr = reversed ? '(역방향) ' : '';
+  return `${dirStr}${CARDS[cardId].name} 카드에 대한 ${SPREADS[fortuneType].label} 해석이 아직 작성되지 않았습니다. cards-editor.html 에서 해석을 작성해 주세요.`;
+}
+
+function getCardArtStyle(card) {
+  const gradients = {
+    major: 'linear-gradient(145deg, #9B8FD4, #6050A8, #8B4E8C)',
+    wands: 'linear-gradient(145deg, #E8A058, #C07830, #A05820)',
+    cups:  'linear-gradient(145deg, #6898D8, #4878B8, #285898)',
+    swords:'linear-gradient(145deg, #88AACC, #6888AA, #486888)',
+    pentacles: 'linear-gradient(145deg, #78B868, #589848, #387828)',
+  };
+  const key = card.arcana === 'major' ? 'major' : card.suit;
+  return `background: ${gradients[key] || gradients.major}`;
+}
+
+function getCardSymbol(card) {
+  if (card.arcana === 'major') return '★';
+  const s = { wands: '🔥', cups: '💧', swords: '⚔', pentacles: '⭐' };
+  return s[card.suit] || '✦';
+}
+
+function restartSameFortune() {
+  drawnCards    = [];
+  currentPosIdx = 0;
+  deck          = shuffleDeck();
+  fanOffset     = 0;
+  velocity      = 0;
+
+  buildDrawUI();
+  buildFan();
+  updateDrawUI();
+  showScreen('screen-draw');
+}
+</script>
+</body>
+</html>
